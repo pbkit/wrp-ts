@@ -6,9 +6,9 @@ import {
   defer,
   Deferred,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
-import type { WvrpChannel } from "./channel.ts";
+import type { WrpChannel } from "./channel.ts";
 
-export interface WvrpGuest {
+export interface WrpGuest {
   availableMethods: Set<string>;
   request(
     name: string,
@@ -21,19 +21,19 @@ export interface WvrpGuest {
   };
 }
 
-export class WvrpError extends Error {
+export class WrpError extends Error {
   constructor(public message: string) {
     super(message);
   }
 }
 
-export interface CreateWvrpGuestConfig {
-  channel: WvrpChannel;
-  onError?: (error: WvrpError) => void;
+export interface CreateWrpGuestConfig {
+  channel: WrpChannel;
+  onError?: (error: WrpError) => void;
 }
-export async function createWvrpGuest(
-  config: CreateWvrpGuestConfig,
-): Promise<WvrpGuest> {
+export async function createWrpGuest(
+  config: CreateWrpGuestConfig,
+): Promise<WrpGuest> {
   const { channel } = config;
   const availableMethodsPromise = defer<Set<string>>();
   interface Request {
@@ -55,7 +55,7 @@ export async function createWvrpGuest(
           continue;
         }
         case "HostError": {
-          config.onError?.(new WvrpError(message.value.message));
+          config.onError?.(new WrpError(message.value.message));
           continue;
         }
         case "HostResStart": {

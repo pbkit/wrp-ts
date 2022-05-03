@@ -1,4 +1,4 @@
-import * as wvrp from "./wvrp/index.ts";
+import * as wrp from "./wrp/index.ts";
 export type {
-  wvrp,
+  wrp,
 };

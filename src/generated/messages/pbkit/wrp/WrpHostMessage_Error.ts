@@ -16,42 +16,42 @@ import {
   default as deserialize,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
 
-export declare namespace $.pbkit.wvrp {
-  export interface WvrpGuestMessage_ReqFinish {
-    reqId: string;
+export declare namespace $.pbkit.wrp {
+  export interface WrpHostMessage_Error {
+    message: string;
   }
 }
-export type Type = $.pbkit.wvrp.WvrpGuestMessage_ReqFinish;
+export type Type = $.pbkit.wrp.WrpHostMessage_Error;
 
-export function getDefaultValue(): $.pbkit.wvrp.WvrpGuestMessage_ReqFinish {
+export function getDefaultValue(): $.pbkit.wrp.WrpHostMessage_Error {
   return {
-    reqId: "",
+    message: "",
   };
 }
 
-export function createValue(partialValue: Partial<$.pbkit.wvrp.WvrpGuestMessage_ReqFinish>): $.pbkit.wvrp.WvrpGuestMessage_ReqFinish {
+export function createValue(partialValue: Partial<$.pbkit.wrp.WrpHostMessage_Error>): $.pbkit.wrp.WrpHostMessage_Error {
   return {
     ...getDefaultValue(),
     ...partialValue,
   };
 }
 
-export function encodeJson(value: $.pbkit.wvrp.WvrpGuestMessage_ReqFinish): unknown {
+export function encodeJson(value: $.pbkit.wrp.WrpHostMessage_Error): unknown {
   const result: any = {};
-  if (value.reqId !== undefined) result.reqId = tsValueToJsonValueFns.string(value.reqId);
+  if (value.message !== undefined) result.message = tsValueToJsonValueFns.string(value.message);
   return result;
 }
 
-export function decodeJson(value: any): $.pbkit.wvrp.WvrpGuestMessage_ReqFinish {
+export function decodeJson(value: any): $.pbkit.wrp.WrpHostMessage_Error {
   const result = getDefaultValue();
-  if (value.reqId !== undefined) result.reqId = jsonValueToTsValueFns.string(value.reqId);
+  if (value.message !== undefined) result.message = jsonValueToTsValueFns.string(value.message);
   return result;
 }
 
-export function encodeBinary(value: $.pbkit.wvrp.WvrpGuestMessage_ReqFinish): Uint8Array {
+export function encodeBinary(value: $.pbkit.wrp.WrpHostMessage_Error): Uint8Array {
   const result: WireMessage = [];
-  if (value.reqId !== undefined) {
-    const tsValue = value.reqId;
+  if (value.message !== undefined) {
+    const tsValue = value.message;
     result.push(
       [1, tsValueToWireValueFns.string(tsValue)],
     );
@@ -59,7 +59,7 @@ export function encodeBinary(value: $.pbkit.wvrp.WvrpGuestMessage_ReqFinish): Ui
   return serialize(result);
 }
 
-export function decodeBinary(binary: Uint8Array): $.pbkit.wvrp.WvrpGuestMessage_ReqFinish {
+export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpHostMessage_Error {
   const result = getDefaultValue();
   const wireMessage = deserialize(binary);
   const wireFields = new Map(wireMessage);
@@ -68,7 +68,7 @@ export function decodeBinary(binary: Uint8Array): $.pbkit.wvrp.WvrpGuestMessage_
     if (wireValue === undefined) break field;
     const value = wireValueToTsValueFns.string(wireValue);
     if (value === undefined) break field;
-    result.reqId = value;
+    result.message = value;
   }
   return result;
 }

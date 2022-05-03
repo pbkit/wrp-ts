@@ -16,39 +16,39 @@ import {
   default as deserialize,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
 
-export declare namespace $.pbkit.wvrp {
-  export interface WvrpHostMessage_Initialize {
+export declare namespace $.pbkit.wrp {
+  export interface WrpHostMessage_Initialize {
     availableMethods: string[];
   }
 }
-export type Type = $.pbkit.wvrp.WvrpHostMessage_Initialize;
+export type Type = $.pbkit.wrp.WrpHostMessage_Initialize;
 
-export function getDefaultValue(): $.pbkit.wvrp.WvrpHostMessage_Initialize {
+export function getDefaultValue(): $.pbkit.wrp.WrpHostMessage_Initialize {
   return {
     availableMethods: [],
   };
 }
 
-export function createValue(partialValue: Partial<$.pbkit.wvrp.WvrpHostMessage_Initialize>): $.pbkit.wvrp.WvrpHostMessage_Initialize {
+export function createValue(partialValue: Partial<$.pbkit.wrp.WrpHostMessage_Initialize>): $.pbkit.wrp.WrpHostMessage_Initialize {
   return {
     ...getDefaultValue(),
     ...partialValue,
   };
 }
 
-export function encodeJson(value: $.pbkit.wvrp.WvrpHostMessage_Initialize): unknown {
+export function encodeJson(value: $.pbkit.wrp.WrpHostMessage_Initialize): unknown {
   const result: any = {};
   result.availableMethods = value.availableMethods.map(value => tsValueToJsonValueFns.string(value));
   return result;
 }
 
-export function decodeJson(value: any): $.pbkit.wvrp.WvrpHostMessage_Initialize {
+export function decodeJson(value: any): $.pbkit.wrp.WrpHostMessage_Initialize {
   const result = getDefaultValue();
   result.availableMethods = value.availableMethods?.map((value: any) => jsonValueToTsValueFns.string(value)) ?? [];
   return result;
 }
 
-export function encodeBinary(value: $.pbkit.wvrp.WvrpHostMessage_Initialize): Uint8Array {
+export function encodeBinary(value: $.pbkit.wrp.WrpHostMessage_Initialize): Uint8Array {
   const result: WireMessage = [];
   for (const tsValue of value.availableMethods) {
     result.push(
@@ -58,7 +58,7 @@ export function encodeBinary(value: $.pbkit.wvrp.WvrpHostMessage_Initialize): Ui
   return serialize(result);
 }
 
-export function decodeBinary(binary: Uint8Array): $.pbkit.wvrp.WvrpHostMessage_Initialize {
+export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpHostMessage_Initialize {
   const result = getDefaultValue();
   const wireMessage = deserialize(binary);
   const wireFields = new Map(wireMessage);

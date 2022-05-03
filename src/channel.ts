@@ -1,12 +1,12 @@
-import type { WvrpMessage } from "./generated/messages/pbkit/wvrp/index.ts";
+import type { WrpMessage } from "./generated/messages/pbkit/wrp/index.ts";
 
 export type Socket = Deno.Reader & Deno.Writer;
 
-export interface WvrpChannel {
-  listen(): AsyncGenerator<WvrpMessage>;
-  send(message: WvrpMessage): Promise<void>;
+export interface WrpChannel {
+  listen(): AsyncGenerator<WrpMessage>;
+  send(message: WrpMessage): Promise<void>;
 }
-export async function createWvrpChannel(socket: Socket): Promise<WvrpChannel> {
+export async function createWrpChannel(socket: Socket): Promise<WrpChannel> {
   return {
     async *listen() {}, // TODO
     async send(message) {}, // TODO

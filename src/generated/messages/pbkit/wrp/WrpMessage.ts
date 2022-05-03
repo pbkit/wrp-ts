@@ -1,59 +1,59 @@
 import {
-  Type as WvrpHostMessage_Initialize,
+  Type as WrpHostMessage_Initialize,
   encodeJson as encodeJson_1,
   decodeJson as decodeJson_1,
   encodeBinary as encodeBinary_1,
   decodeBinary as decodeBinary_1,
-} from "./WvrpHostMessage_Initialize.ts";
+} from "./WrpHostMessage_Initialize.ts";
 import {
-  Type as WvrpHostMessage_Error,
+  Type as WrpHostMessage_Error,
   encodeJson as encodeJson_2,
   decodeJson as decodeJson_2,
   encodeBinary as encodeBinary_2,
   decodeBinary as decodeBinary_2,
-} from "./WvrpHostMessage_Error.ts";
+} from "./WrpHostMessage_Error.ts";
 import {
-  Type as WvrpHostMessage_ResStart,
+  Type as WrpHostMessage_ResStart,
   encodeJson as encodeJson_3,
   decodeJson as decodeJson_3,
   encodeBinary as encodeBinary_3,
   decodeBinary as decodeBinary_3,
-} from "./WvrpHostMessage_ResStart.ts";
+} from "./WrpHostMessage_ResStart.ts";
 import {
-  Type as WvrpHostMessage_ResPayload,
+  Type as WrpHostMessage_ResPayload,
   encodeJson as encodeJson_4,
   decodeJson as decodeJson_4,
   encodeBinary as encodeBinary_4,
   decodeBinary as decodeBinary_4,
-} from "./WvrpHostMessage_ResPayload.ts";
+} from "./WrpHostMessage_ResPayload.ts";
 import {
-  Type as WvrpHostMessage_ResFinish,
+  Type as WrpHostMessage_ResFinish,
   encodeJson as encodeJson_5,
   decodeJson as decodeJson_5,
   encodeBinary as encodeBinary_5,
   decodeBinary as decodeBinary_5,
-} from "./WvrpHostMessage_ResFinish.ts";
+} from "./WrpHostMessage_ResFinish.ts";
 import {
-  Type as WvrpGuestMessage_ReqStart,
+  Type as WrpGuestMessage_ReqStart,
   encodeJson as encodeJson_6,
   decodeJson as decodeJson_6,
   encodeBinary as encodeBinary_6,
   decodeBinary as decodeBinary_6,
-} from "./WvrpGuestMessage_ReqStart.ts";
+} from "./WrpGuestMessage_ReqStart.ts";
 import {
-  Type as WvrpGuestMessage_ReqPayload,
+  Type as WrpGuestMessage_ReqPayload,
   encodeJson as encodeJson_7,
   decodeJson as decodeJson_7,
   encodeBinary as encodeBinary_7,
   decodeBinary as decodeBinary_7,
-} from "./WvrpGuestMessage_ReqPayload.ts";
+} from "./WrpGuestMessage_ReqPayload.ts";
 import {
-  Type as WvrpGuestMessage_ReqFinish,
+  Type as WrpGuestMessage_ReqFinish,
   encodeJson as encodeJson_8,
   decodeJson as decodeJson_8,
   encodeBinary as encodeBinary_8,
   decodeBinary as decodeBinary_8,
-} from "./WvrpGuestMessage_ReqFinish.ts";
+} from "./WrpGuestMessage_ReqFinish.ts";
 import {
   jsonValueToTsValueFns,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/json/scalar.ts";
@@ -69,36 +69,36 @@ import {
   default as deserialize,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
 
-export declare namespace $.pbkit.wvrp {
-  export interface WvrpMessage {
+export declare namespace $.pbkit.wrp {
+  export interface WrpMessage {
     message?: (
-      | { field: "HostInitialize", value: WvrpHostMessage_Initialize }
-      | { field: "HostError", value: WvrpHostMessage_Error }
-      | { field: "HostResStart", value: WvrpHostMessage_ResStart }
-      | { field: "HostResPayload", value: WvrpHostMessage_ResPayload }
-      | { field: "HostResFinish", value: WvrpHostMessage_ResFinish }
-      | { field: "GuestReqStart", value: WvrpGuestMessage_ReqStart }
-      | { field: "GuestReqPayload", value: WvrpGuestMessage_ReqPayload }
-      | { field: "GuestReqFinish", value: WvrpGuestMessage_ReqFinish }
+      | { field: "HostInitialize", value: WrpHostMessage_Initialize }
+      | { field: "HostError", value: WrpHostMessage_Error }
+      | { field: "HostResStart", value: WrpHostMessage_ResStart }
+      | { field: "HostResPayload", value: WrpHostMessage_ResPayload }
+      | { field: "HostResFinish", value: WrpHostMessage_ResFinish }
+      | { field: "GuestReqStart", value: WrpGuestMessage_ReqStart }
+      | { field: "GuestReqPayload", value: WrpGuestMessage_ReqPayload }
+      | { field: "GuestReqFinish", value: WrpGuestMessage_ReqFinish }
   );
   }
 }
-export type Type = $.pbkit.wvrp.WvrpMessage;
+export type Type = $.pbkit.wrp.WrpMessage;
 
-export function getDefaultValue(): $.pbkit.wvrp.WvrpMessage {
+export function getDefaultValue(): $.pbkit.wrp.WrpMessage {
   return {
     message: undefined,
   };
 }
 
-export function createValue(partialValue: Partial<$.pbkit.wvrp.WvrpMessage>): $.pbkit.wvrp.WvrpMessage {
+export function createValue(partialValue: Partial<$.pbkit.wrp.WrpMessage>): $.pbkit.wrp.WrpMessage {
   return {
     ...getDefaultValue(),
     ...partialValue,
   };
 }
 
-export function encodeJson(value: $.pbkit.wvrp.WvrpMessage): unknown {
+export function encodeJson(value: $.pbkit.wrp.WrpMessage): unknown {
   const result: any = {};
   switch (value.message?.field) {
     case "HostInitialize": {
@@ -137,7 +137,7 @@ export function encodeJson(value: $.pbkit.wvrp.WvrpMessage): unknown {
   return result;
 }
 
-export function decodeJson(value: any): $.pbkit.wvrp.WvrpMessage {
+export function decodeJson(value: any): $.pbkit.wrp.WrpMessage {
   const result = getDefaultValue();
   if (value.HostInitialize !== undefined) result.message = {field: "HostInitialize", value: decodeJson_1(value.HostInitialize)};
   if (value.HostError !== undefined) result.message = {field: "HostError", value: decodeJson_2(value.HostError)};
@@ -150,7 +150,7 @@ export function decodeJson(value: any): $.pbkit.wvrp.WvrpMessage {
   return result;
 }
 
-export function encodeBinary(value: $.pbkit.wvrp.WvrpMessage): Uint8Array {
+export function encodeBinary(value: $.pbkit.wrp.WrpMessage): Uint8Array {
   const result: WireMessage = [];
   switch (value.message?.field) {
     case "HostInitialize": {
@@ -238,7 +238,7 @@ const oneofFieldNamesMap = {
     [8, "GuestReqFinish" as const],
   ]),
 };
-export function decodeBinary(binary: Uint8Array): $.pbkit.wvrp.WvrpMessage {
+export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpMessage {
   const result = getDefaultValue();
   const wireMessage = deserialize(binary);
   const wireFields = new Map(wireMessage);

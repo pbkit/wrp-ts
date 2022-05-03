@@ -1,1 +1,3 @@
-# WVRP - WebView Request Protocol
+# WRP - Webview/Worker Request Protocol
+
+pronounce as **wrap**(`ræp`)

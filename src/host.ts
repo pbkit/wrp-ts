@@ -2,12 +2,12 @@ import {
   createEventBuffer,
   EventBuffer,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/event-buffer.ts";
-import type { WvrpChannel } from "./channel.ts";
+import type { WrpChannel } from "./channel.ts";
 
-export interface WvrpHost {
-  listen(): AsyncGenerator<WvrpRequest>;
+export interface WrpHost {
+  listen(): AsyncGenerator<WrpRequest>;
 }
-export interface WvrpRequest {
+export interface WrpRequest {
   methodName: string;
   metadata: Map<string, string>;
   req: AsyncGenerator<Uint8Array>;
@@ -16,13 +16,13 @@ export interface WvrpRequest {
   sendTrailer(value: Map<string, string>): void;
 }
 
-export interface CreateWvrpHostConfig {
-  channel: WvrpChannel;
+export interface CreateWrpHostConfig {
+  channel: WrpChannel;
   availableMethods: Set<string>;
 }
-export async function createWvrpHost(
-  config: CreateWvrpHostConfig,
-): Promise<WvrpHost> {
+export async function createWrpHost(
+  config: CreateWrpHostConfig,
+): Promise<WrpHost> {
   const { channel, availableMethods } = config;
   type Request = EventBuffer<Uint8Array>;
   const requests: { [reqId: string]: Request } = {};

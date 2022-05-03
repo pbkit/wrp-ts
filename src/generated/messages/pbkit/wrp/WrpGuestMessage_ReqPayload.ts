@@ -16,43 +16,43 @@ import {
   default as deserialize,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
 
-export declare namespace $.pbkit.wvrp {
-  export interface WvrpGuestMessage_ReqPayload {
+export declare namespace $.pbkit.wrp {
+  export interface WrpGuestMessage_ReqPayload {
     reqId: string;
     payload: Uint8Array;
   }
 }
-export type Type = $.pbkit.wvrp.WvrpGuestMessage_ReqPayload;
+export type Type = $.pbkit.wrp.WrpGuestMessage_ReqPayload;
 
-export function getDefaultValue(): $.pbkit.wvrp.WvrpGuestMessage_ReqPayload {
+export function getDefaultValue(): $.pbkit.wrp.WrpGuestMessage_ReqPayload {
   return {
     reqId: "",
     payload: new Uint8Array(),
   };
 }
 
-export function createValue(partialValue: Partial<$.pbkit.wvrp.WvrpGuestMessage_ReqPayload>): $.pbkit.wvrp.WvrpGuestMessage_ReqPayload {
+export function createValue(partialValue: Partial<$.pbkit.wrp.WrpGuestMessage_ReqPayload>): $.pbkit.wrp.WrpGuestMessage_ReqPayload {
   return {
     ...getDefaultValue(),
     ...partialValue,
   };
 }
 
-export function encodeJson(value: $.pbkit.wvrp.WvrpGuestMessage_ReqPayload): unknown {
+export function encodeJson(value: $.pbkit.wrp.WrpGuestMessage_ReqPayload): unknown {
   const result: any = {};
   if (value.reqId !== undefined) result.reqId = tsValueToJsonValueFns.string(value.reqId);
   if (value.payload !== undefined) result.payload = tsValueToJsonValueFns.bytes(value.payload);
   return result;
 }
 
-export function decodeJson(value: any): $.pbkit.wvrp.WvrpGuestMessage_ReqPayload {
+export function decodeJson(value: any): $.pbkit.wrp.WrpGuestMessage_ReqPayload {
   const result = getDefaultValue();
   if (value.reqId !== undefined) result.reqId = jsonValueToTsValueFns.string(value.reqId);
   if (value.payload !== undefined) result.payload = jsonValueToTsValueFns.bytes(value.payload);
   return result;
 }
 
-export function encodeBinary(value: $.pbkit.wvrp.WvrpGuestMessage_ReqPayload): Uint8Array {
+export function encodeBinary(value: $.pbkit.wrp.WrpGuestMessage_ReqPayload): Uint8Array {
   const result: WireMessage = [];
   if (value.reqId !== undefined) {
     const tsValue = value.reqId;
@@ -69,7 +69,7 @@ export function encodeBinary(value: $.pbkit.wvrp.WvrpGuestMessage_ReqPayload): U
   return serialize(result);
 }
 
-export function decodeBinary(binary: Uint8Array): $.pbkit.wvrp.WvrpGuestMessage_ReqPayload {
+export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpGuestMessage_ReqPayload {
   const result = getDefaultValue();
   const wireMessage = deserialize(binary);
   const wireFields = new Map(wireMessage);
