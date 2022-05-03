@@ -1,0 +1,47 @@
+syntax = "proto3";
+package pbkit.wvrp;
+
+message WvrpMessage {
+  oneof message {
+    WvrpHostMessage_Initialize Host_Initialize = 1;
+    WvrpHostMessage_Error Host_Error = 2;
+    WvrpHostMessage_ResStart Host_ResStart = 3;
+    WvrpHostMessage_ResPayload Host_ResPayload = 4;
+    WvrpHostMessage_ResFinish Host_ResFinish = 5;
+    WvrpGuestMessage_ReqStart Guest_ReqStart = 6;
+    WvrpGuestMessage_ReqPayload Guest_ReqPayload = 7;
+    WvrpGuestMessage_ReqFinish Guest_ReqFinish = 8;
+  }
+}
+
+message WvrpHostMessage_Initialize {
+  repeated string available_methods = 1;
+}
+message WvrpHostMessage_Error {
+  string message = 1;
+}
+message WvrpHostMessage_ResStart {
+  string req_id = 1;
+  map<string, string> header = 2;
+}
+message WvrpHostMessage_ResPayload {
+  string req_id = 1;
+  bytes payload = 2;
+}
+message WvrpHostMessage_ResFinish {
+  string req_id = 1;
+  map<string, string> trailer = 2;
+}
+
+message WvrpGuestMessage_ReqStart {
+  string req_id = 1;
+  string method_name = 2;
+  map<string, string> metadata = 3;
+}
+message WvrpGuestMessage_ReqPayload {
+  string req_id = 1;
+  bytes payload = 2;
+}
+message WvrpGuestMessage_ReqFinish {
+  string req_id = 1;
+}
