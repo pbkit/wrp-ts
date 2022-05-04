@@ -7,9 +7,8 @@ import {
   encodeBinary,
   Type as WrpMessage,
 } from "./generated/messages/pbkit/wrp/WrpMessage.ts";
+import { Socket } from "./socket.ts";
 import { chain } from "./misc.ts";
-
-export type Socket = Deno.Reader & Deno.Writer;
 
 export interface WrpChannel {
   listen(): AsyncGenerator<WrpMessage>;
