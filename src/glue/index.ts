@@ -26,14 +26,14 @@ export function getGlue(): Glue {
         wait = undefined;
       }
       const first = queue[0];
-      if (first.length <= data.length) {
+      if (first.byteLength <= data.byteLength) {
         queue.shift();
         data.set(first);
-        return first.length;
+        return first.byteLength;
       }
-      data.set(first.subarray(0, data.length));
-      queue[0] = first.subarray(data.length);
-      return data.length;
+      data.set(first.subarray(0, data.byteLength));
+      queue[0] = first.subarray(data.byteLength);
+      return data.byteLength;
     }),
   };
   return global[key] = glue;
