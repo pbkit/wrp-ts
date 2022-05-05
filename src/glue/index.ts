@@ -5,7 +5,7 @@ import {
 import { chain } from "../misc.ts";
 import { str2u8s } from "./misc.ts";
 
-const key = "glue"; // TODO: use less conflicting name
+const key = "<glue>";
 
 export interface Glue extends Deno.Reader {
   recv(data: Uint8Array | string): void;
