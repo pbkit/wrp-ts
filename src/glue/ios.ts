@@ -2,6 +2,8 @@ import { Socket } from "../socket.ts";
 import { tryUntilSuccess } from "./misc.ts";
 import { getGlue } from "./index.ts";
 
+// https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-add
+
 export async function createIosSocket(): Promise<Socket> {
   const iosGlue = await getIosGlue();
   return {
