@@ -47,3 +47,16 @@ export function createGlue(): Glue {
     }),
   };
 }
+
+// for postMessage approach
+export interface GlueEvent {
+  data: [typeof key, Uint8Array | string];
+  source: typeof globalThis | Window;
+}
+export function isGlueEvent(event: any): event is GlueEvent {
+  if (event.source !== globalThis.parent) return false;
+  if (!Array.isArray(event.data)) return false;
+  if (event.data.length < 2) return false;
+  if (event.data[0] !== key) return false;
+  return true;
+}

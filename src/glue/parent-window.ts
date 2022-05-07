@@ -1,6 +1,6 @@
 import { defer } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
 import { Socket } from "../socket.ts";
-import { getGlue } from "./index.ts";
+import { getGlue, isGlueEvent } from "./index.ts";
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage
@@ -21,6 +21,7 @@ export async function createParentWindowSocket(
   await handshake();
   const glue = getGlue();
   globalThis.addEventListener("message", (event: any) => {
+    if (event.source !== globalThis.parent) return;
     if (!isGlueEvent(event)) return;
     glue.recv(event.data[1]);
   });
@@ -40,6 +41,7 @@ function handshake(): Promise<void> {
   globalThis.addEventListener("message", handshakeHandler);
   return wait;
   function handshakeHandler(event: any) {
+    if (event.source !== globalThis.parent) return;
     if (!isGlueEvent(event)) return;
     if (event.data[1] === "ping") {
       globalThis.parent.postMessage([key, "pong"], "*");
@@ -47,15 +49,4 @@ function handshake(): Promise<void> {
       wait.resolve();
     }
   }
-}
-
-export interface GlueEvent {
-  data: [typeof key, Uint8Array | string];
-}
-export function isGlueEvent(event: any): event is GlueEvent {
-  if (event.source !== globalThis.parent) return false;
-  if (!Array.isArray(event.data)) return false;
-  if (event.data.length < 2) return false;
-  if (event.data[0] !== key) return false;
-  return true;
 }

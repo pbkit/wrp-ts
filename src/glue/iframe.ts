@@ -1,7 +1,6 @@
 import { Disposable, Socket } from "../socket.ts";
 import { checkAndRetryUntilSuccess } from "./misc.ts";
-import { createGlue } from "./index.ts";
-import { isGlueEvent } from "./parent-window.ts";
+import { createGlue, isGlueEvent } from "./index.ts";
 
 const key = "<glue>";
 
@@ -30,6 +29,7 @@ export async function createIframeSocket(
     },
   };
   function messageHandler(event: any) {
+    if (event.source !== iframeElement.contentWindow) return;
     if (!isGlueEvent(event)) return;
     glue.recv(event.data[1]);
   }
@@ -49,6 +49,7 @@ async function handshake(iframeElement: HTMLIFrameElement): Promise<void> {
     iframeElement.contentWindow?.postMessage([key, "ping"], "*");
   }
   function handshakeHandler(event: any) {
+    if (event.source !== iframeElement.contentWindow) return;
     if (!isGlueEvent(event)) return;
     if (event.data[1] === "pong") {
       done = true;
