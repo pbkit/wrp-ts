@@ -8,20 +8,24 @@ export function str2u8s(str: string): Uint8Array {
   return u8s;
 }
 
-export type TryFn<T> = () => T | undefined;
-export function tryUntilSuccess<T>(
-  fn: TryFn<T>,
+export function checkAndRetryUntilSuccess<T>(
+  checkFn: () => T | undefined,
+  retryFn?: () => void,
   interval: number = 100,
   limit: number = 10,
 ): Promise<T> {
   return new Promise((resolve, reject) => {
     let count = 0;
     const intervalId = setInterval(() => {
-      const result = fn();
+      const result = checkFn();
       if (result !== undefined) {
         clearInterval(intervalId);
         resolve(result);
-      } else if (++count >= limit) {
+        return;
+      }
+      if (count++ < limit) {
+        retryFn?.();
+      } else {
         clearInterval(intervalId);
         reject(new Error("Exhausted all retries"));
       }

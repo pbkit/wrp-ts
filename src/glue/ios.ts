@@ -1,5 +1,5 @@
 import { Socket } from "../socket.ts";
-import { tryUntilSuccess } from "./misc.ts";
+import { checkAndRetryUntilSuccess } from "./misc.ts";
 import { getGlue } from "./index.ts";
 
 // https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-add
@@ -18,7 +18,7 @@ interface IosGlue {
   postMessage(message: { data: Uint8Array }): Promise<void>;
 }
 async function getIosGlue(): Promise<IosGlue> {
-  return await tryUntilSuccess(
+  return await checkAndRetryUntilSuccess(
     () => (globalThis as any).webkit?.messageHandlers?.glue || undefined,
   );
 }

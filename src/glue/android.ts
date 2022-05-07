@@ -1,5 +1,5 @@
 import { Socket } from "../socket.ts";
-import { tryUntilSuccess, u8s2str } from "./misc.ts";
+import { checkAndRetryUntilSuccess, u8s2str } from "./misc.ts";
 import { getGlue } from "./index.ts";
 
 // https://developer.android.com/reference/android/webkit/WebView#addJavascriptInterface(java.lang.Object,%20java.lang.String)
@@ -22,5 +22,7 @@ interface AndroidGlue {
   recv(data: string): Promise<void>;
 }
 async function getAndroidGlue(): Promise<AndroidGlue> {
-  return await tryUntilSuccess(() => (globalThis as any)[key] || undefined);
+  return await checkAndRetryUntilSuccess(
+    () => (globalThis as any)[key] || undefined,
+  );
 }
