@@ -1,4 +1,8 @@
 {
+  "tasks": {
+    "dnt": "deno run -A --no-check scripts/build_npm.ts",
+    "fmt": "deno fmt --ignore=src/generated,tmp"
+  },
   "compilerOptions": {
     "lib": ["deno.ns", "dom"]
   }
