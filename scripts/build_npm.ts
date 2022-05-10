@@ -42,24 +42,6 @@ async function buildNpm(config: BuildConfig) {
     test: false,
     shims: {
       deno: true,
-      custom: [
-        {
-          package: {
-            name: "web-streams-polyfill",
-            version: "^3.2.0",
-            subPath: "dist/ponyfill.mjs",
-          },
-          globalNames: ["ReadableStream"],
-        },
-        {
-          package: {
-            name: "undici",
-            version: "^4.15.1",
-            subPath: "lib/fetch/headers.js",
-          },
-          globalNames: ["Headers"],
-        },
-      ],
     },
     package: {
       name: "@pbkit/wrp",

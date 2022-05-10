@@ -14,14 +14,14 @@ export interface WrpChannel {
   listen(): AsyncGenerator<WrpMessage>;
   send(message: WrpMessage): Promise<void>;
 }
-export async function createWrpChannel(socket: Socket): Promise<WrpChannel> {
+export function createWrpChannel(socket: Socket): WrpChannel {
   return {
     async *listen() {
       const bufReader = new BufReader(socket);
       while (true) {
         const lengthU8s = await bufReader.readFull(new Uint8Array(4));
         if (!lengthU8s) break;
-        const length = new DataView(lengthU8s).getUint32(0, true);
+        const length = new DataView(lengthU8s.buffer).getUint32(0, true);
         const payload = await bufReader.readFull(new Uint8Array(length));
         if (!payload) throw new Deno.errors.UnexpectedEof();
         yield decodeBinary(payload);
@@ -30,7 +30,7 @@ export async function createWrpChannel(socket: Socket): Promise<WrpChannel> {
     send: chain(async function send(message) {
       const payload = encodeBinary(message);
       const lengthU8s = new Uint8Array(4);
-      new DataView(lengthU8s).setUint32(0, payload.length, true);
+      new DataView(lengthU8s.buffer).setUint32(0, payload.length, true);
       const bufWriter = new BufWriter(socket);
       await bufWriter.write(lengthU8s);
       await bufWriter.write(payload);
