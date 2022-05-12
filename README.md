@@ -17,15 +17,39 @@ pronounce as **wrap**(`ræp`)
 - _Host_ - An interface that allows you to process and respond to requests
   received from guests.
 
-### Wrp channel packet diagram
-
-<img src="https://kroki.io/packetdiag/svg/eNorSEzOTi1JyUxMV6jmUlBIzs8pz0wpyVCwVTA2sAYK5OWnpMZnpGamZ5QAxSzAYga6xlYKSr6pxcWJ6amGMXnBmVWpMXkaqXrpegqmmkogJSa6FihKAhIrc_ITU5SAUpa6hkYIOSNU7YYGEP2GxrpGyKoUkAwwAspZWino6elx1XIBAC0FNYs=">
+<img
+  alt="wrp channel packet diagram"
+  src="https://kroki.io/packetdiag/svg/eNorSEzOTi1JyUxMV6jmUlBIzs8pz0wpyVCwVTA2sAYK5OWnpMZnpGamZ5QAxSzAYga6xlYKSr6pxcWJ6amGMXnBmVWpMXkaqXrpegqmmkogJSa6FihKAhIrc_ITU5SAUpa6hkYIOSNU7YYGEP2GxrpGyKoUkAwwAspZWino6elx1XIBAC0FNYs=">
 
 Whenever the channel sends a message, it writes the message size as a 4-byte
-little-endian integer to the socket, and then writes a message payload as
-thatsize.
+little-endian integer to the socket, and then writes a message payload as that
+size.
 
 The message payload is defined in the [./src/wrp.proto](./src/wrp.proto) file.
+
+```mermaid
+sequenceDiagram
+  participant H as WrpHost
+  participant G as WrpGuest
+  H->>G: HostInitialize
+  Note over H, G: Send available methods
+  loop
+    G->>+H: GuestReqStart
+    H-->>G: HostResStart
+    par request
+      loop
+        G-->>H: GuestReqPayload
+      end
+      G-->>H: GuestReqFinish
+    end
+    par response
+      loop
+        H-->>G: HostResPayload
+      end
+      H-->>-G: HostResFinish
+    end
+  end
+```
 
 ### Types
 
