@@ -3,17 +3,18 @@ import {
   EventBuffer,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/event-buffer.ts";
 import type { WrpChannel } from "./channel.ts";
+import type { Metadata } from "./metadata.ts";
 
 export interface WrpHost {
   listen(): AsyncGenerator<WrpRequest>;
 }
 export interface WrpRequest {
   methodName: string;
-  metadata: Map<string, string>;
+  metadata: Metadata;
   req: AsyncGenerator<Uint8Array>;
-  sendHeader(value: Map<string, string>): void;
+  sendHeader(value: Metadata): void;
   sendPayload(value: Uint8Array): void;
-  sendTrailer(value: Map<string, string>): void;
+  sendTrailer(value: Metadata): void;
 }
 
 export interface CreateWrpHostConfig {
@@ -65,13 +66,13 @@ export async function createWrpHost(
             const req = request.drain();
             yield {
               methodName,
-              metadata,
+              metadata: Object.fromEntries(metadata),
               req,
               sendHeader(header) {
                 channel.send({
                   message: {
                     field: "HostResStart",
-                    value: { reqId, header },
+                    value: { reqId, header: new Map(Object.entries(header)) },
                   },
                 });
               },
@@ -87,7 +88,7 @@ export async function createWrpHost(
                 channel.send({
                   message: {
                     field: "HostResFinish",
-                    value: { reqId, trailer },
+                    value: { reqId, trailer: new Map(Object.entries(trailer)) },
                   },
                 });
               },

@@ -7,17 +7,18 @@ import {
   Deferred,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
 import type { WrpChannel } from "./channel.ts";
+import { LazyMetadata, Metadata, resolveLazyMetadata } from "./metadata.ts";
 
 export interface WrpGuest {
   availableMethods: Set<string>;
   request(
-    name: string,
-    metadata: Map<string, string>,
+    methodName: string,
     req: AsyncGenerator<Uint8Array>,
+    metadata?: LazyMetadata,
   ): {
     res: AsyncGenerator<Uint8Array>;
-    header: Promise<Map<string, string>>;
-    trailer: Promise<Map<string, string>>;
+    header: Promise<Metadata>;
+    trailer: Promise<Metadata>;
   };
 }
 
@@ -38,8 +39,8 @@ export async function createWrpGuest(
   const availableMethodsPromise = defer<Set<string>>();
   interface Request {
     eventBuffer: EventBuffer<Uint8Array>;
-    header: Deferred<Map<string, string>>;
-    trailer: Deferred<Map<string, string>>;
+    header: Deferred<Metadata>;
+    trailer: Deferred<Metadata>;
   }
   const requests: { [reqId: string]: Request } = {};
   let reqIdCounter = BigInt(0);
@@ -60,7 +61,7 @@ export async function createWrpGuest(
         }
         case "HostResStart": {
           const { reqId, header } = message.value;
-          requests[reqId]?.header.resolve(header);
+          requests[reqId]?.header.resolve(Object.fromEntries(header));
           continue;
         }
         case "HostResPayload": {
@@ -73,7 +74,7 @@ export async function createWrpGuest(
           if (!(reqId in requests)) continue;
           const request = requests[reqId];
           request.eventBuffer.finish();
-          request.trailer.resolve(trailer);
+          request.trailer.resolve(Object.fromEntries(trailer));
           delete requests[reqId];
           continue;
         }
@@ -82,25 +83,24 @@ export async function createWrpGuest(
   })();
   return {
     availableMethods: await availableMethodsPromise,
-    request(name, metadata, req) {
+    request(methodName, req, lazyMetadata) {
       const reqId = `${reqIdCounter += 1n}`;
       const eventBuffer = createEventBuffer<Uint8Array>();
-      const header = defer<Map<string, string>>();
-      const trailer = defer<Map<string, string>>();
+      const header = defer<Metadata>();
+      const trailer = defer<Metadata>();
       const res = eventBuffer.drain();
       requests[reqId] = { eventBuffer, header, trailer };
-      channel.send({
-        message: {
-          field: "GuestReqStart",
-          value: {
-            reqId,
-            methodName: name,
-            metadata,
-          },
-        },
-      });
       (async () => {
         try {
+          const metadata = new Map(Object.entries(
+            await resolveLazyMetadata(lazyMetadata),
+          ));
+          channel.send({
+            message: {
+              field: "GuestReqStart",
+              value: { reqId, methodName, metadata },
+            },
+          });
           for await (const payload of req) {
             channel.send({
               message: {

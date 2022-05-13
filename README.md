@@ -69,17 +69,27 @@ interface WrpChannel {
   send(message: WrpMessage): Promise<void>;
 }
 
+type Metadata = Record<string, string>;
+interface LazyMetadata {
+  [key: string]:
+    | undefined
+    | string
+    | Promise<string | undefined>
+    | (() => string | undefined)
+    | (() => Promise<string | undefined>);
+}
+
 // Guest provides a way to send requests to the host.
 interface WrpGuest {
   availableMethods: Set<string>;
   request(
-    name: string,
-    metadata: Map<string, string>,
+    methodName: string,
     req: AsyncGenerator<Uint8Array>,
+    metadata?: LazyMetadata,
   ): {
     res: AsyncGenerator<Uint8Array>;
-    header: Promise<Map<string, string>>;
-    trailer: Promise<Map<string, string>>;
+    header: Promise<Metadata>;
+    trailer: Promise<Metadata>;
   };
 }
 
@@ -89,10 +99,10 @@ interface WrpHost {
 }
 interface WrpRequest {
   methodName: string;
-  metadata: Map<string, string>;
+  metadata: Metadata;
   req: AsyncGenerator<Uint8Array>;
-  sendHeader(value: Map<string, string>): void;
+  sendHeader(value: Metadata): void;
   sendPayload(value: Uint8Array): void;
-  sendTrailer(value: Map<string, string>): void;
+  sendTrailer(value: Metadata): void;
 }
 ```
