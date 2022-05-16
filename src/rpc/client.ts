@@ -1,6 +1,7 @@
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
 import type { WrpGuest } from "../guest.ts";
 import type { LazyMetadata, Metadata } from "../metadata.ts";
+import { mapAsyncGenerator } from "./misc.ts";
 
 export interface CreateWrpClientImplConfig {
   guest: WrpGuest;
@@ -33,11 +34,4 @@ export function createWrpClientImpl(
       return [_res, header, trailer];
     };
   };
-}
-
-async function* mapAsyncGenerator<T, U>(
-  asyncGenerator: AsyncGenerator<T>,
-  fn: (value: T) => U,
-): AsyncGenerator<U> {
-  for await (const value of asyncGenerator) yield fn(value);
 }

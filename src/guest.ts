@@ -73,8 +73,14 @@ export async function createWrpGuest(
           const { reqId, trailer } = message.value;
           if (!(reqId in requests)) continue;
           const request = requests[reqId];
-          request.eventBuffer.finish();
-          request.trailer.resolve(Object.fromEntries(trailer));
+          const trailerObject = Object.fromEntries(trailer);
+          request.trailer.resolve(trailerObject);
+          if (trailerObject["wrp-status"] === "ok") {
+            request.eventBuffer.finish();
+          } else {
+            const message = trailerObject["wrp-message"] || "";
+            request.eventBuffer.error(new WrpError(message));
+          }
           delete requests[reqId];
           continue;
         }

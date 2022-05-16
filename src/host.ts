@@ -85,6 +85,8 @@ export async function createWrpHost(
                 });
               },
               sendTrailer(trailer) {
+                trailer["wrp-status"] ||= "ok";
+                trailer["wrp-message"] ||= "";
                 channel.send({
                   message: {
                     field: "HostResFinish",
