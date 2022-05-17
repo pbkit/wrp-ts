@@ -46,20 +46,6 @@ export async function createWrpHost(
           continue;
         }
         switch (message.field) {
-          case "HostInitialize":
-          case "HostResStart":
-          case "HostResPayload":
-          case "HostResFinish":
-            channel.send({
-              message: {
-                field: "HostError",
-                value: {
-                  message:
-                    `Guest sent a message in the format the host should send: ${message.field}`,
-                },
-              },
-            });
-            continue;
           case "GuestReqStart": {
             const { reqId, methodName, metadata } = message.value;
             const request = requests[reqId] = createEventBuffer();
