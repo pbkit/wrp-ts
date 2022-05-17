@@ -19,7 +19,7 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
     methods[methodName] = method;
   }
   return {
-    async *listen() {
+    async listen() {
       for await (const request of config.host.listen()) {
         const method = methods[request.methodName];
         const sendHeader = doOnce(request.sendHeader);
@@ -60,7 +60,7 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
   };
 }
 
-export function createFrpcServerImplBuilder() {
+export function createWrpServerImplBuilder() {
   return createServerImplBuilder<Metadata, Metadata, Metadata>();
 }
 
