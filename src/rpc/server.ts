@@ -4,7 +4,7 @@ import {
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
 import type { WrpHost } from "../host.ts";
 import type { Metadata } from "../metadata.ts";
-import { mapAsyncGenerator } from "./misc.ts";
+import { getMethodName, mapAsyncGenerator } from "./misc.ts";
 
 export interface CreateWrpServerConfig {
   host: WrpHost;
@@ -15,7 +15,8 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
     [methodName: string]: Method<Metadata, Metadata, Metadata>;
   } = {};
   for await (const method of config.methods) {
-    methods[method[0].methodName] = method;
+    const methodName = getMethodName(method[0]);
+    methods[methodName] = method;
   }
   return {
     async *listen() {
@@ -27,7 +28,7 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
           sendHeader({});
           sendTrailer({
             "wrp-status": "error",
-            "wrp-message": "",
+            "wrp-message": `Method not found: ${request.methodName}`,
           });
           continue;
         }

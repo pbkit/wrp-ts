@@ -1,7 +1,7 @@
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
 import type { WrpGuest } from "../guest.ts";
 import type { LazyMetadata, Metadata } from "../metadata.ts";
-import { mapAsyncGenerator } from "./misc.ts";
+import { getMethodName, mapAsyncGenerator } from "./misc.ts";
 
 export interface CreateWrpClientImplConfig {
   guest: WrpGuest;
@@ -18,7 +18,8 @@ export function createWrpClientImpl(
   config: CreateWrpClientImplConfig,
 ): RpcClientImpl<LazyMetadata, Metadata, Metadata> {
   return (methodDescriptor) => {
-    const { methodName, requestType, responseType } = methodDescriptor;
+    const { requestType, responseType } = methodDescriptor;
+    const methodName = getMethodName(methodDescriptor);
     if (!config.guest.availableMethods.has(methodName)) {
       return () => {
         throw new WrpClientError("Method not available");
