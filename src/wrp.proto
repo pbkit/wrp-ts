@@ -11,6 +11,7 @@ message WrpMessage {
     WrpGuestMessage_ReqStart Guest_ReqStart = 6;
     WrpGuestMessage_ReqPayload Guest_ReqPayload = 7;
     WrpGuestMessage_ReqFinish Guest_ReqFinish = 8;
+    WrpGuestMessage_ResFinish Guest_ResFinish = 9;
   }
 }
 
@@ -43,5 +44,8 @@ message WrpGuestMessage_ReqPayload {
   bytes payload = 2;
 }
 message WrpGuestMessage_ReqFinish {
+  string req_id = 1;
+}
+message WrpGuestMessage_ResFinish {
   string req_id = 1;
 }

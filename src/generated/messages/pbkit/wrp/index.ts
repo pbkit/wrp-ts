@@ -7,3 +7,4 @@ export type { Type as WrpHostMessage_ResFinish } from "./WrpHostMessage_ResFinis
 export type { Type as WrpGuestMessage_ReqStart } from "./WrpGuestMessage_ReqStart.ts";
 export type { Type as WrpGuestMessage_ReqPayload } from "./WrpGuestMessage_ReqPayload.ts";
 export type { Type as WrpGuestMessage_ReqFinish } from "./WrpGuestMessage_ReqFinish.ts";
+export type { Type as WrpGuestMessage_ResFinish } from "./WrpGuestMessage_ResFinish.ts";

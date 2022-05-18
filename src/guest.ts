@@ -91,7 +91,16 @@ export async function createWrpGuest(
     availableMethods: await availableMethodsPromise,
     request(methodName, req, lazyMetadata) {
       const reqId = `${reqIdCounter += 1n}`;
-      const eventBuffer = createEventBuffer<Uint8Array>();
+      const eventBuffer = createEventBuffer<Uint8Array>({
+        onDrainEnd() {
+          channel.send({
+            message: {
+              field: "GuestResFinish",
+              value: { reqId },
+            },
+          });
+        },
+      });
       const header = defer<Metadata>();
       const trailer = defer<Metadata>();
       const res = eventBuffer.drain();

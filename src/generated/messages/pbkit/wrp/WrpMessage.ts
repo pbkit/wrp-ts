@@ -55,6 +55,13 @@ import {
   decodeBinary as decodeBinary_8,
 } from "./WrpGuestMessage_ReqFinish.ts";
 import {
+  Type as WrpGuestMessage_ResFinish,
+  encodeJson as encodeJson_9,
+  decodeJson as decodeJson_9,
+  encodeBinary as encodeBinary_9,
+  decodeBinary as decodeBinary_9,
+} from "./WrpGuestMessage_ResFinish.ts";
+import {
   jsonValueToTsValueFns,
 } from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/json/scalar.ts";
 import {
@@ -80,6 +87,7 @@ export declare namespace $.pbkit.wrp {
       | { field: "GuestReqStart", value: WrpGuestMessage_ReqStart }
       | { field: "GuestReqPayload", value: WrpGuestMessage_ReqPayload }
       | { field: "GuestReqFinish", value: WrpGuestMessage_ReqFinish }
+      | { field: "GuestResFinish", value: WrpGuestMessage_ResFinish }
   );
   }
 }
@@ -133,6 +141,10 @@ export function encodeJson(value: $.pbkit.wrp.WrpMessage): unknown {
       result.GuestReqFinish = encodeJson_8(value.message.value);
       break;
     }
+    case "GuestResFinish": {
+      result.GuestResFinish = encodeJson_9(value.message.value);
+      break;
+    }
   }
   return result;
 }
@@ -147,6 +159,7 @@ export function decodeJson(value: any): $.pbkit.wrp.WrpMessage {
   if (value.GuestReqStart !== undefined) result.message = {field: "GuestReqStart", value: decodeJson_6(value.GuestReqStart)};
   if (value.GuestReqPayload !== undefined) result.message = {field: "GuestReqPayload", value: decodeJson_7(value.GuestReqPayload)};
   if (value.GuestReqFinish !== undefined) result.message = {field: "GuestReqFinish", value: decodeJson_8(value.GuestReqFinish)};
+  if (value.GuestResFinish !== undefined) result.message = {field: "GuestResFinish", value: decodeJson_9(value.GuestResFinish)};
   return result;
 }
 
@@ -209,6 +222,13 @@ export function encodeBinary(value: $.pbkit.wrp.WrpMessage): Uint8Array {
       );
       break;
     }
+    case "GuestResFinish": {
+      const tsValue = value.message.value;
+      result.push(
+        [9, { type: WireType.LengthDelimited as const, value: encodeBinary_9(tsValue) }],
+      );
+      break;
+    }
   }
   return serialize(result);
 }
@@ -222,9 +242,10 @@ const fieldNames: Map<number, string> = new Map([
   [6, "GuestReqStart"],
   [7, "GuestReqPayload"],
   [8, "GuestReqFinish"],
+  [9, "GuestResFinish"],
 ]);
 const oneofFieldNumbersMap: { [oneof: string]: Set<number> } = {
-  message: new Set([1, 2, 3, 4, 5, 6, 7, 8]),
+  message: new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]),
 };
 const oneofFieldNamesMap = {
   message: new Map([
@@ -236,6 +257,7 @@ const oneofFieldNamesMap = {
     [6, "GuestReqStart" as const],
     [7, "GuestReqPayload" as const],
     [8, "GuestReqFinish" as const],
+    [9, "GuestResFinish" as const],
   ]),
 };
 export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpMessage {
@@ -258,6 +280,7 @@ export function decodeBinary(binary: Uint8Array): $.pbkit.wrp.WrpMessage {
       [6](wireValue: Field) { return wireValue.type === WireType.LengthDelimited ? decodeBinary_6(wireValue.value) : undefined; },
       [7](wireValue: Field) { return wireValue.type === WireType.LengthDelimited ? decodeBinary_7(wireValue.value) : undefined; },
       [8](wireValue: Field) { return wireValue.type === WireType.LengthDelimited ? decodeBinary_8(wireValue.value) : undefined; },
+      [9](wireValue: Field) { return wireValue.type === WireType.LengthDelimited ? decodeBinary_9(wireValue.value) : undefined; },
     };
     const value = (wireValueToTsValueMap[fieldNumber as keyof typeof wireValueToTsValueMap] as any)?.(wireValue!);
     if (value === undefined) break oneof;
