@@ -23,7 +23,7 @@ export function createWrpChannel(socket: Socket): WrpChannel {
         if (!lengthU8s) break;
         const length = new DataView(lengthU8s.buffer).getUint32(0, true);
         const payload = await bufReader.readFull(new Uint8Array(length));
-        if (!payload) throw new Deno.errors.UnexpectedEof();
+        if (!payload) throw new UnexpectedEof();
         yield decodeBinary(payload);
       }
     },
@@ -38,3 +38,9 @@ export function createWrpChannel(socket: Socket): WrpChannel {
     }),
   };
 }
+
+export const UnexpectedEof = (
+  typeof Deno === "undefined"
+    ? class UnexpectedEof extends Error {}
+    : Deno.errors.UnexpectedEof
+);
