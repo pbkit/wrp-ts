@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "build:npm": "deno run -A scripts/build-npm-packages/entrypoint.ts",
+    "build:npm": "deno run -A --no-check scripts/build-npm-packages/entrypoint.ts",
     "fmt": "deno fmt --ignore=src/generated,tmp"
   },
   "compilerOptions": {
