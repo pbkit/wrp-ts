@@ -63,18 +63,18 @@ import {
 } from "./WrpGuestMessage_ResFinish.ts";
 import {
   jsonValueToTsValueFns,
-} from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/json/scalar.ts";
+} from "https://deno.land/x/pbkit@v0.0.45/core/runtime/json/scalar.ts";
 import {
   WireMessage,
   WireType,
   Field,
-} from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/index.ts";
+} from "https://deno.land/x/pbkit@v0.0.45/core/runtime/wire/index.ts";
 import {
   default as serialize,
-} from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/serialize.ts";
+} from "https://deno.land/x/pbkit@v0.0.45/core/runtime/wire/serialize.ts";
 import {
   default as deserialize,
-} from "https:/deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
+} from "https://deno.land/x/pbkit@v0.0.45/core/runtime/wire/deserialize.ts";
 
 export declare namespace $.pbkit.wrp {
   export interface WrpMessage {
