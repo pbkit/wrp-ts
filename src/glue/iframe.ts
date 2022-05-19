@@ -1,4 +1,4 @@
-import { Disposable, Socket } from "../socket.ts";
+import { Closer, Socket } from "../socket.ts";
 import { checkAndRetryUntilSuccess } from "./misc.ts";
 import { createGlue, isGlueEvent } from "./index.ts";
 
@@ -7,18 +7,18 @@ const key = "<glue>";
 export interface CreateIframeSocketConfig {
   iframeElement: HTMLIFrameElement;
   iframeOrigin: string;
-  onDisposed?: () => void;
+  onClosed?: () => void;
 }
 export async function createIframeSocket(
   config: CreateIframeSocketConfig,
-): Promise<Disposable & Socket> {
-  const { iframeElement, iframeOrigin, onDisposed } = config;
+): Promise<Closer & Socket> {
+  const { iframeElement, iframeOrigin, onClosed } = config;
   await handshake(iframeElement);
   const glue = createGlue();
   globalThis.addEventListener("message", messageHandler);
-  onceIframeReloaded(iframeElement, dispose);
+  onceIframeReloaded(iframeElement, close);
   return {
-    dispose,
+    close,
     read: glue.read,
     async write(data) {
       const { contentWindow } = iframeElement;
@@ -33,10 +33,10 @@ export async function createIframeSocket(
     if (!isGlueEvent(event)) return;
     glue.recv(event.data[1]);
   }
-  function dispose() {
+  function close() {
     globalThis.removeEventListener("message", messageHandler);
-    glue.dispose();
-    onDisposed?.();
+    glue.close();
+    onClosed?.();
   }
 }
 

@@ -10,6 +10,7 @@ export interface Writer {
   write(p: Uint8Array): Promise<number>;
 }
 
-export interface Disposable {
-  dispose(): void;
+// same as `Deno.Closer`
+export interface Closer {
+  close(): void;
 }

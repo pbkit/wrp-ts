@@ -2,13 +2,13 @@ import {
   defer,
   Deferred,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
-import { Disposable, Reader } from "../socket.ts";
+import { Closer, Reader } from "../socket.ts";
 import { chain } from "../misc.ts";
 import { str2u8s } from "./misc.ts";
 
 const key = "<glue>";
 
-export interface Glue extends Disposable, Reader {
+export interface Glue extends Closer, Reader {
   recv(data: Uint8Array | string): void;
 }
 
@@ -20,18 +20,18 @@ export function getGlue(): Glue {
 
 export function createGlue(): Glue {
   const queue: Uint8Array[] = [];
-  let disposed = false;
+  let closed = false;
   let wait: Deferred<void> | undefined;
   return {
-    dispose: () => disposed = true,
+    close: () => closed = true,
     recv: (data) => {
-      if (disposed) throw new Error("Glue has been disposed.");
+      if (closed) throw new Error("Glue has been closed.");
       queue.push(typeof data === "string" ? str2u8s(data) : data);
       wait?.resolve();
     },
     read: chain(async (data) => {
       if (queue.length < 1) {
-        if (disposed) return null;
+        if (closed) return null;
         await (wait = defer());
         wait = undefined;
       }

@@ -22,7 +22,7 @@ export interface WrpRequest extends EventEmitter<WrpRequestEvents> {
 }
 interface WrpRequestEvents {
   "cancel-response": void;
-  "dispose": void;
+  "close": void;
 }
 
 interface RequestHandlingState {
@@ -124,7 +124,7 @@ export async function createWrpHost(
         }
       } finally {
         for (const reqId in states) {
-          states[reqId].request.emit("dispose", undefined);
+          states[reqId].request.emit("close", undefined);
           delete states[reqId];
         }
       }
