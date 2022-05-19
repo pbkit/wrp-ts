@@ -63,7 +63,7 @@ export default function useWrpServer<
       const server = await createWrpServer({ host, methods });
       server.listen();
     })();
-  }, [channel, methodImpls]);
+  }, [channel]);
   useEffect(() => {
     if (!ref.current) ref.current = createRef();
     const prev = { ...ref.current?.state };
