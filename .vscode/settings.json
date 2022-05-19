@@ -2,6 +2,7 @@
   "deno.enable": true,
   "deno.lint": false,
   "deno.unstable": true,
+  "deno.importMap": "./import_map.json",
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
   "[typescript]": {
