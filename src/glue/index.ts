@@ -2,13 +2,13 @@ import {
   defer,
   Deferred,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
-import { Disposable } from "../socket.ts";
+import { Disposable, Reader } from "../socket.ts";
 import { chain } from "../misc.ts";
 import { str2u8s } from "./misc.ts";
 
 const key = "<glue>";
 
-export interface Glue extends Disposable, Deno.Reader {
+export interface Glue extends Disposable, Reader {
   recv(data: Uint8Array | string): void;
 }
 
