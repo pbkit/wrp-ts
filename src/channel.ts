@@ -19,7 +19,10 @@ export function createWrpChannel(socket: Socket): WrpChannel {
     async *listen() {
       const bufReader = new BufReader(socket);
       while (true) {
-        const lengthU8s = await bufReader.readFull(new Uint8Array(4));
+        let lengthU8s: Uint8Array | null = null;
+        try {
+          lengthU8s = await bufReader.readFull(new Uint8Array(4));
+        } catch { /* error when socket closed */ }
         if (!lengthU8s) break;
         const length = new DataView(lengthU8s.buffer).getUint32(0, true);
         const payload = await bufReader.readFull(new Uint8Array(length));

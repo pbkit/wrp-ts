@@ -23,7 +23,10 @@ export function createGlue(): Glue {
   let closed = false;
   let wait: Deferred<void> | undefined;
   return {
-    close: () => closed = true,
+    close() {
+      closed = true;
+      wait?.resolve();
+    },
     recv: (data) => {
       if (closed) throw new Error("Glue has been closed.");
       queue.push(typeof data === "string" ? str2u8s(data) : data);

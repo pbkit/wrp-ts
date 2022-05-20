@@ -2,17 +2,17 @@ import {
   createServerImplBuilder,
   Method,
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
-import type { WrpHost } from "../host.ts";
+import type { WrpHost, WrpRequest } from "../host.ts";
 import type { Metadata } from "../metadata.ts";
 import { getMethodName, mapAsyncGenerator } from "./misc.ts";
 
 export interface CreateWrpServerConfig {
   host: WrpHost;
-  methods: AsyncGenerator<Method<Metadata, Metadata, Metadata>>;
+  methods: AsyncGenerator<Method<WrpRequest, Metadata, Metadata>>;
 }
 export async function createWrpServer(config: CreateWrpServerConfig) {
   const methods: {
-    [methodName: string]: Method<Metadata, Metadata, Metadata>;
+    [methodName: string]: Method<WrpRequest, Metadata, Metadata>;
   } = {};
   for await (const method of config.methods) {
     const methodName = getMethodName(method[0]);
@@ -37,7 +37,7 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
         const { requestType, responseType } = methodDescriptor;
         const [res, header, trailer] = methodImpl(
           mapAsyncGenerator(req, requestType.deserializeBinary),
-          request.metadata,
+          request,
         );
         (async function () {
           let _header: Metadata = {};
@@ -61,7 +61,7 @@ export async function createWrpServer(config: CreateWrpServerConfig) {
 }
 
 export function createWrpServerImplBuilder() {
-  return createServerImplBuilder<Metadata, Metadata, Metadata>();
+  return createServerImplBuilder<WrpRequest, Metadata, Metadata>();
 }
 
 function doOnce<T extends (...args: any) => any>(fn: T) {

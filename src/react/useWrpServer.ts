@@ -8,7 +8,7 @@ import {
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/event-emitter.ts";
 import { useEffect, useRef } from "react";
 import { WrpChannel } from "../channel.ts";
-import { createWrpHost } from "../host.ts";
+import { createWrpHost, WrpRequest } from "../host.ts";
 import { Metadata } from "../metadata.ts";
 import { createWrpServer, createWrpServerImplBuilder } from "../rpc/server.ts";
 
@@ -18,10 +18,10 @@ export type MethodImpl<TState extends Record<string, any>, TReq, TRes> = [
   (
     params: {
       req: Parameters<
-        MethodImplHandler<TReq, TRes, Metadata, Metadata, Metadata>
+        MethodImplHandler<TReq, TRes, WrpRequest, Metadata, Metadata>
       >[0];
       res: Parameters<
-        MethodImplHandler<TReq, TRes, Metadata, Metadata, Metadata>
+        MethodImplHandler<TReq, TRes, WrpRequest, Metadata, Metadata>
       >[1];
       getState: GetStateFn<TState>;
       stateChanges: EventEmitter<TState>;
