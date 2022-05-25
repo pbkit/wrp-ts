@@ -8,28 +8,30 @@ import {
   Type as WrpMessage,
 } from "./generated/messages/pbkit/wrp/WrpMessage.ts";
 import { Socket } from "./socket.ts";
-import { chain } from "./misc.ts";
+import { branch, chain } from "./misc.ts";
 
 export interface WrpChannel {
   listen(): AsyncGenerator<WrpMessage>;
   send(message: WrpMessage): Promise<void>;
 }
 export function createWrpChannel(socket: Socket): WrpChannel {
+  const listen = async function* () {
+    const bufReader = new BufReader(socket);
+    while (true) {
+      let lengthU8s: Uint8Array | null = null;
+      try {
+        lengthU8s = await bufReader.readFull(new Uint8Array(4));
+      } catch { /* error when socket closed */ }
+      if (!lengthU8s) break;
+      const length = new DataView(lengthU8s.buffer).getUint32(0, true);
+      const payload = await bufReader.readFull(new Uint8Array(length));
+      if (!payload) throw new UnexpectedEof();
+      yield decodeBinary(payload);
+    }
+  };
+  const branched = branch(listen());
   return {
-    async *listen() {
-      const bufReader = new BufReader(socket);
-      while (true) {
-        let lengthU8s: Uint8Array | null = null;
-        try {
-          lengthU8s = await bufReader.readFull(new Uint8Array(4));
-        } catch { /* error when socket closed */ }
-        if (!lengthU8s) break;
-        const length = new DataView(lengthU8s.buffer).getUint32(0, true);
-        const payload = await bufReader.readFull(new Uint8Array(length));
-        if (!payload) throw new UnexpectedEof();
-        yield decodeBinary(payload);
-      }
-    },
+    listen: branched.get,
     send: chain(async function send(message) {
       const payload = encodeBinary(message);
       const lengthU8s = new Uint8Array(4);
