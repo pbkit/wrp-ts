@@ -10,7 +10,7 @@ export interface UseWrpIframeSocketResult {
 export default function useWrpIframeSocket(): UseWrpIframeSocketResult {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
-  useEffect(() => {
+  useOnceEffect(() => {
     let socket: Closer & Socket;
     let unmounted = false;
     let waitForReconnect = defer<void>();
@@ -39,6 +39,17 @@ export default function useWrpIframeSocket(): UseWrpIframeSocketResult {
       waitForReconnect.resolve();
       waitForReconnect = defer<void>();
     }
-  }, []);
+  });
   return { iframeRef, socket };
 }
+
+// Guaranteed to be called only once in a component's lifecycle.
+// It called only once, even in strict mode.
+const useOnceEffect: typeof useEffect = (effect) => {
+  const effectHasFiredRef = useRef<true>();
+  useEffect(() => {
+    if (effectHasFiredRef.current) return;
+    else effectHasFiredRef.current = true;
+    return effect();
+  }, []);
+};

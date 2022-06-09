@@ -10,7 +10,7 @@ import type { WrpChannel } from "./channel.ts";
 import { LazyMetadata, Metadata, resolveLazyMetadata } from "./metadata.ts";
 
 export interface WrpGuest {
-  availableMethods: Set<string>;
+  readonly availableMethods: Set<string>;
   request(
     methodName: string,
     req: AsyncGenerator<Uint8Array>,
@@ -36,13 +36,25 @@ export async function createWrpGuest(
   config: CreateWrpGuestConfig,
 ): Promise<WrpGuest> {
   const { channel } = config;
-  const availableMethodsPromise = defer<Set<string>>();
+  let availableMethods: Set<string>;
+  const waitFirstHostInitialize = defer<void>();
   interface Request {
     eventBuffer: EventBuffer<Uint8Array>;
     header: Deferred<Metadata>;
     trailer: Deferred<Metadata>;
   }
   const requests: { [reqId: string]: Request } = {};
+  function finishRequest(reqId: string, trailerObject: Record<string, string>) {
+    const request = requests[reqId];
+    request.trailer.resolve(trailerObject);
+    if (trailerObject["wrp-status"] === "ok") {
+      request.eventBuffer.finish();
+    } else {
+      const message = trailerObject["wrp-message"] || "";
+      request.eventBuffer.error(new WrpError(message));
+    }
+    delete requests[reqId];
+  }
   let reqIdCounter = BigInt(0);
   (async () => {
     for await (const { message } of channel.listen()) {
@@ -52,7 +64,15 @@ export async function createWrpGuest(
           continue;
         case "HostInitialize": {
           const { value } = message;
-          availableMethodsPromise.resolve(new Set(value.availableMethods));
+          availableMethods = new Set(value.availableMethods);
+          waitFirstHostInitialize.resolve();
+          // handle host reconnection
+          for (const reqId in requests) {
+            finishRequest(reqId, {
+              "wrp-status": "error",
+              "wrp-message": "Host disconnected and reconnected.",
+            });
+          }
           continue;
         }
         case "HostError": {
@@ -72,23 +92,17 @@ export async function createWrpGuest(
         case "HostResFinish": {
           const { reqId, trailer } = message.value;
           if (!(reqId in requests)) continue;
-          const request = requests[reqId];
-          const trailerObject = Object.fromEntries(trailer);
-          request.trailer.resolve(trailerObject);
-          if (trailerObject["wrp-status"] === "ok") {
-            request.eventBuffer.finish();
-          } else {
-            const message = trailerObject["wrp-message"] || "";
-            request.eventBuffer.error(new WrpError(message));
-          }
-          delete requests[reqId];
+          finishRequest(reqId, Object.fromEntries(trailer));
           continue;
         }
       }
     }
   })();
+  await waitFirstHostInitialize;
   return {
-    availableMethods: await availableMethodsPromise,
+    get availableMethods() {
+      return availableMethods;
+    },
     request(methodName, req, lazyMetadata) {
       const reqId = `${reqIdCounter += 1n}`;
       const eventBuffer = createEventBuffer<Uint8Array>({
