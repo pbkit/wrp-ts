@@ -18,35 +18,29 @@ export async function createParentWindowSocket(
     throw new Error("There is no parent window.");
   }
   const { parentWindowOrigin } = config;
-  await handshake();
+  const wait = defer<void>();
   const glue = getGlue();
   globalThis.addEventListener("message", (event: any) => {
     if (event.source !== globalThis.parent) return;
     if (!isGlueEvent(event)) return;
-    glue.recv(event.data[1]);
+    const [, isHandshakeMessage, payload] = event.data;
+    if (isHandshakeMessage) {
+      if (payload === "ping") {
+        globalThis.parent.postMessage([key, true, "pong"], "*");
+        wait.resolve();
+      }
+    } else {
+      glue.recv(payload);
+    }
   });
+  await wait;
   return {
     read: glue.read,
     async write(data) {
       const length = data.byteLength;
       const { postMessage } = globalThis.parent;
-      postMessage([key, data], parentWindowOrigin, [data.buffer]);
+      postMessage([key, false, data], parentWindowOrigin, [data.buffer]);
       return length;
     },
   };
-}
-
-function handshake(): Promise<void> {
-  const wait = defer<void>();
-  globalThis.addEventListener("message", handshakeHandler);
-  return wait;
-  function handshakeHandler(event: any) {
-    if (event.source !== globalThis.parent) return;
-    if (!isGlueEvent(event)) return;
-    if (event.data[1] === "ping") {
-      globalThis.parent.postMessage([key, "pong"], "*");
-      globalThis.removeEventListener("message", handshakeHandler);
-      wait.resolve();
-    }
-  }
 }

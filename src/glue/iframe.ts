@@ -24,14 +24,20 @@ export async function createIframeSocket(
       const { contentWindow } = iframeElement;
       if (!contentWindow) throw new Error("Iframe has been unloaded.");
       const length = data.byteLength;
-      contentWindow.postMessage([key, data], iframeOrigin, [data.buffer]);
+      contentWindow.postMessage(
+        [key, false, data],
+        iframeOrigin,
+        [data.buffer],
+      );
       return length;
     },
   };
   function messageHandler(event: any) {
     if (event.source !== iframeElement.contentWindow) return;
     if (!isGlueEvent(event)) return;
-    glue.recv(event.data[1]);
+    const [, isHandshakeMessage, payload] = event.data;
+    if (isHandshakeMessage) return;
+    glue.recv(payload);
   }
   function close() {
     globalThis.removeEventListener("message", messageHandler);
@@ -46,12 +52,14 @@ async function handshake(iframeElement: HTMLIFrameElement): Promise<void> {
   ping();
   await checkAndRetryUntilSuccess(() => done, ping, 100, 100);
   function ping() {
-    iframeElement.contentWindow?.postMessage([key, "ping"], "*");
+    iframeElement.contentWindow?.postMessage([key, true, "ping"], "*");
   }
   function handshakeHandler(event: any) {
     if (event.source !== iframeElement.contentWindow) return;
     if (!isGlueEvent(event)) return;
-    if (event.data[1] === "pong") {
+    const [, isHandshakeMessage, payload] = event.data;
+    if (!isHandshakeMessage) return;
+    if (payload === "pong") {
       done = true;
       globalThis.removeEventListener("message", handshakeHandler);
     }
