@@ -4,6 +4,9 @@ import { WrpChannel } from "../channel.ts";
 import { createWrpGuest } from "../guest.ts";
 import { createWrpClientImpl } from "../rpc/client.ts";
 
+/**
+ * @deprecated use `@pbkit/wrp-jotai` instead
+ */
 export default function useWrpClientImpl(
   channel: WrpChannel | undefined,
 ): ReturnType<typeof createWrpClientImpl> | undefined {
