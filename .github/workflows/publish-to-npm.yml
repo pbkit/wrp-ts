@@ -24,3 +24,7 @@ jobs:
         working-directory: tmp/npm/wrp-react
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --access=public
+        working-directory: tmp/npm/wrp-jotai
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
