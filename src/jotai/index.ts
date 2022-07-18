@@ -10,11 +10,11 @@ import { createWrpGuest, WrpGuest } from "../guest.ts";
 export type SocketAtom = Atom<Promise<Socket | undefined>>;
 export type ChannelAtom = Atom<WrpChannel | undefined>;
 export type GuestAtom = Atom<WrpGuest | undefined>;
-export type ClientAtom = Atom<RpcClientImpl | undefined>;
+export type ClientImplAtom = Atom<RpcClientImpl | undefined>;
 export interface WrpAtomSet {
   channelAtom: ChannelAtom;
   guestAtom: GuestAtom;
-  clientAtom: ClientAtom;
+  clientImplAtom: ClientImplAtom;
 }
 export function createWrpAtomSet(socketAtom: SocketAtom): WrpAtomSet {
   interface ChannelAndGuest {
@@ -62,10 +62,10 @@ export function createWrpAtomSet(socketAtom: SocketAtom): WrpAtomSet {
     channelAndGuestAtom,
     (cag) => cag?.guest,
   );
-  const clientAtom = atom<RpcClientImpl | undefined>((get) => {
+  const clientImplAtom = atom<RpcClientImpl | undefined>((get) => {
     const guest = get(guestAtom);
     if (!guest) return;
     return createWrpClientImpl({ guest: guest });
   });
-  return { channelAtom, guestAtom, clientAtom };
+  return { channelAtom, guestAtom, clientImplAtom };
 }

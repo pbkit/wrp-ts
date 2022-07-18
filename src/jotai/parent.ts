@@ -4,7 +4,7 @@ import { createAndroidSocket } from "../glue/android.ts";
 import { createParentWindowSocket } from "../glue/parent-window.ts";
 import {
   ChannelAtom,
-  ClientAtom,
+  ClientImplAtom,
   createWrpAtomSet,
   GuestAtom,
   SocketAtom,
@@ -21,4 +21,8 @@ export const socketAtom: SocketAtom = atom(async () => {
 const wrpAtomSet: WrpAtomSet = createWrpAtomSet(socketAtom);
 export const channelAtom: ChannelAtom = wrpAtomSet.channelAtom;
 export const guestAtom: GuestAtom = wrpAtomSet.guestAtom;
-export const clientAtom: ClientAtom = wrpAtomSet.clientAtom;
+/**
+ * @deprecated use `clientImplAtom` instead
+ */
+export const clientAtom: ClientImplAtom = wrpAtomSet.clientImplAtom;
+export const clientImplAtom: ClientImplAtom = wrpAtomSet.clientImplAtom;
