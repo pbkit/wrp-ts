@@ -8,28 +8,28 @@ import { createWrpGuest, WrpGuest } from "../guest.ts";
 import { createAndroidSocket } from "../glue/android.ts";
 import { createParentWindowSocket } from "../glue/parent-window.ts";
 
-export const socket = atom<Promise<Socket | null>>(async () => {
+export const socket = atom<Promise<Socket | undefined>>(async () => {
   return await Promise.any([
     createAndroidSocket(),
     createIosSocket(),
     createParentWindowSocket({ parentWindowOrigin: "*" }),
-  ]).catch(() => null);
+  ]).catch(() => undefined);
 });
 
-export const channel = atom<WrpChannel | null>((get) => {
+export const channel = atom<WrpChannel | undefined>((get) => {
   const _socket = get(socket);
-  if (!_socket) return null;
+  if (!_socket) return;
   return createWrpChannel(_socket);
 });
 
-export const guest = atom<Promise<WrpGuest | null>>(async (get) => {
+export const guest = atom<Promise<WrpGuest | undefined>>(async (get) => {
   const _channel = get(channel);
-  if (!_channel) return null;
+  if (!_channel) return;
   return await createWrpGuest({ channel: _channel });
 });
 
-export const client = atom<RpcClientImpl | null>((get) => {
+export const client = atom<RpcClientImpl | undefined>((get) => {
   const _guest = get(guest);
-  if (!_guest) return null;
+  if (!_guest) return;
   return createWrpClientImpl({ guest: _guest });
 });
