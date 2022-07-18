@@ -7,14 +7,16 @@ import { createWrpChannel, WrpChannel } from "../channel.ts";
 import { createWrpClientImpl } from "../rpc/client.ts";
 import { createWrpGuest, WrpGuest } from "../guest.ts";
 
+export type SocketAtom = Atom<Promise<Socket | undefined>>;
+export type ChannelAtom = Atom<WrpChannel | undefined>;
+export type GuestAtom = Atom<WrpGuest | undefined>;
+export type ClientAtom = Atom<RpcClientImpl | undefined>;
 export interface WrpAtomSet {
-  channelAtom: Atom<WrpChannel | undefined>;
-  guestAtom: Atom<WrpGuest | undefined>;
-  clientAtom: Atom<RpcClientImpl | undefined>;
+  channelAtom: ChannelAtom;
+  guestAtom: GuestAtom;
+  clientAtom: ClientAtom;
 }
-export function createWrpAtomSet(
-  socketAtom: Atom<Promise<Socket | undefined>>,
-): WrpAtomSet {
+export function createWrpAtomSet(socketAtom: SocketAtom): WrpAtomSet {
   interface ChannelAndGuest {
     channel: WrpChannel;
     guest: WrpGuest;
