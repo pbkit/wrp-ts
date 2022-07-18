@@ -1,5 +1,6 @@
 import { emptyDir } from "https://deno.land/std@0.122.0/fs/mod.ts";
 import buildWrp from "./buildWrp.ts";
+import buildWrpJotai from "./buildWrpJotai.ts";
 import buildWrpReact from "./buildWrpReact.ts";
 
 await emptyDir("tmp/npm");
@@ -24,5 +25,11 @@ await Promise.all([
     version,
     dist: "tmp/npm/wrp-react",
     tmp: "tmp/npm/tmp/wrp-react",
+  }),
+  buildWrpJotai({
+    name: "@pbkit/wrp-jotai",
+    version,
+    dist: "tmp/npm/wrp-jotai",
+    tmp: "tmp/npm/tmp/wrp-jotai",
   }),
 ]);
