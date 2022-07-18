@@ -8,6 +8,9 @@ export interface UseWrpParentSocketResult {
   socket: Socket | undefined;
   error: Error | undefined;
 }
+/**
+ * @deprecated use `@pbkit/wrp-jotai/parent` instead
+ */
 export default function useWrpParentSocket(): UseWrpParentSocketResult {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
