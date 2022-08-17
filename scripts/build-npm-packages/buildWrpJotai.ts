@@ -40,7 +40,11 @@ export default async function buildWrpJotai(config: BuildConfig) {
       await Deno.writeTextFile(
         toPath,
         rewriteModulePath(code, (modulePath) => {
-          if (modulePath.startsWith("../")) {
+          if (modulePath.startsWith("../react/")) {
+            return removeExt(
+              modulePath.replace(/^\.\.\/react\//, "@pbkit/wrp-react/"),
+            );
+          } else if (modulePath.startsWith("../")) {
             return removeExt(modulePath.replace(/^\.\.\//, "@pbkit/wrp/"));
           } else if (modulePath.startsWith(".")) {
             return removeExt(modulePath);
