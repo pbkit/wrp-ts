@@ -33,6 +33,9 @@ export async function createParentWindowSocket(
       glue.recv(payload);
     }
   });
+  setTimeout(() => {
+    wait.reject(new Error("Handshake timeout."));
+  }, 500);
   await wait;
   return {
     read: glue.read,
