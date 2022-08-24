@@ -17,21 +17,31 @@ export interface WrpAtomSet {
   clientImplAtom: ClientImplAtom;
 }
 export function createWrpAtomSet(socketAtom: SocketAtom): WrpAtomSet {
+  const channelAtom: ChannelAtom = atom((get) => {
+    const socket = get(socketAtom);
+    if (!socket) return;
+    return createWrpChannel(socket);
+  });
+  return createWrpAtomSetFromSourceChannelAtom(channelAtom);
+}
+
+export function createWrpAtomSetFromSourceChannelAtom(
+  sourceChannelAtom: ChannelAtom,
+): WrpAtomSet {
   interface ChannelAndGuest {
     channel: WrpChannel;
     guest: Promise<WrpGuest>;
   }
   const channelAndGuestAtom = atom<Promise<ChannelAndGuest | undefined>>(
     async (get) => {
-      const socket = get(socketAtom);
-      if (!socket) return;
-      const realChannel = createWrpChannel(socket);
+      const sourceChannel = get(sourceChannelAtom);
+      if (!sourceChannel) return;
       const listeners: ((message?: WrpMessage) => void)[] = [];
       const guest = createWrpGuest({
         channel: {
-          ...realChannel,
+          ...sourceChannel,
           async *listen() {
-            for await (const message of realChannel.listen()) {
+            for await (const message of sourceChannel.listen()) {
               yield message;
               for (const listener of listeners) listener(message);
               listeners.length = 0;
@@ -40,7 +50,7 @@ export function createWrpAtomSet(socketAtom: SocketAtom): WrpAtomSet {
         },
       });
       const channel: WrpChannel = {
-        ...realChannel,
+        ...sourceChannel,
         async *listen() {
           while (true) {
             const message = await new Promise<WrpMessage | undefined>(
