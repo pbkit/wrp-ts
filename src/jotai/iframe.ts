@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import { atom, PrimitiveAtom, useSetAtom } from "jotai";
 import { createWrpAtomSetFromSourceChannelAtom, WrpAtomSet } from "./index.ts";
-import { createWrpChannel as createWrpChannelFn } from "../channel.ts";
+import { Socket } from "../socket.ts";
+import {
+  createWrpChannel as createWrpChannelFn,
+  WrpChannel,
+} from "../channel.ts";
 import {
   default as useWrpIframeSocket,
   UseWrpIframeSocketResult,
@@ -9,7 +13,7 @@ import {
 
 export function useIframeWrpAtomSetUpdateEffect(
   primitiveWrpAtomSetAtom: PrimitiveAtom<WrpAtomSet>,
-  createWrpChannel = createWrpChannelFn,
+  createWrpChannel: (socket: Socket) => WrpChannel = createWrpChannelFn,
 ): UseWrpIframeSocketResult {
   const setIframeAtomSet = useSetAtom(primitiveWrpAtomSetAtom);
   const useWrpIframeSocketResult = useWrpIframeSocket();
