@@ -28,6 +28,10 @@ export type MethodImpl<TState extends Record<string, any>, TReq, TRes> = [
     },
   ) => void,
 ];
+
+/**
+ * @deprecated use `server.useWrpServer, server.rpc` instead
+ */
 export default function useWrpServer<
   TState extends Record<string, any>,
   TMethodImpls extends MethodImpl<TState, any, any>[],
