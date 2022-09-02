@@ -21,24 +21,19 @@ export const socketAtom: SocketAtom = atom(async () => {
     createParentWindowSocket({ parentWindowOrigin: "*" }),
   ]).catch(() => undefined);
 });
+
 const wrpAtomSet: WrpAtomSet = createWrpAtomSet(socketAtom);
-/**
- * @deprecated use `useChannel` instead
- */
+
 export const channelAtom: ChannelAtom = wrpAtomSet.channelAtom;
 export function useChannel(): WrpChannel | undefined {
   return useAtomValue(wrpAtomSet.channelAtom);
 }
-/**
- * @deprecated use `useGuest` instead
- */
+
 export const guestAtom: GuestAtom = wrpAtomSet.guestAtom;
 export function useGuest(): WrpGuest | undefined {
   return useAtomValue(wrpAtomSet.guestAtom);
 }
-/**
- * @deprecated use `useClientImpl` instead
- */
+
 export const clientImplAtom: ClientImplAtom = wrpAtomSet.clientImplAtom;
 export function useClientImpl(): RpcClientImpl | undefined {
   return useAtomValue(wrpAtomSet.clientImplAtom);
