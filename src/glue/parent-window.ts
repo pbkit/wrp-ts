@@ -8,25 +8,24 @@ import { getGlue, isGlueEvent } from "./index.ts";
 const key = "<glue>";
 
 export interface CreateParentWindowSocketConfig {
+  parent?: Window | null;
   parentWindowOrigin: string;
 }
 export async function createParentWindowSocket(
   config: CreateParentWindowSocketConfig,
 ): Promise<Socket> {
-  if (globalThis.top === globalThis.self) throw new Error("This is the top.");
-  if (!("parent" in globalThis) || !globalThis.parent?.postMessage) {
-    throw new Error("There is no parent window.");
-  }
-  const { parentWindowOrigin } = config;
+  const { parent = globalThis.parent, parentWindowOrigin } = config;
+  if (!parent?.postMessage) throw new Error("There is no parent window.");
+  if (parent === globalThis.self) throw new Error("Invalid parent window.");
   const wait = defer<void>();
   const glue = getGlue();
   globalThis.addEventListener("message", (event: any) => {
-    if (event.source !== globalThis.parent) return;
+    if (event.source !== parent) return;
     if (!isGlueEvent(event)) return;
     const [, isHandshakeMessage, payload] = event.data;
     if (isHandshakeMessage) {
       if (payload === "ping") {
-        globalThis.parent.postMessage([key, true, "pong"], "*");
+        parent.postMessage([key, true, "pong"], "*");
         wait.resolve();
       }
     } else {
@@ -41,7 +40,7 @@ export async function createParentWindowSocket(
     read: glue.read,
     async write(data) {
       const length = data.byteLength;
-      const { postMessage } = globalThis.parent;
+      const { postMessage } = parent;
       postMessage([key, false, data], parentWindowOrigin, [data.buffer]);
       return length;
     },

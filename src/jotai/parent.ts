@@ -18,7 +18,13 @@ export const socketAtom: SocketAtom = atom(async () => {
   return await Promise.any([
     createAndroidSocket(),
     createIosSocket(),
-    createParentWindowSocket({ parentWindowOrigin: "*" }),
+    createParentWindowSocket({
+      parentWindowOrigin: "*",
+    }),
+    createParentWindowSocket({
+      parent: globalThis.opener,
+      parentWindowOrigin: "*",
+    }),
   ]).catch(() => undefined);
 });
 
