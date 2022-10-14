@@ -1,8 +1,10 @@
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import type { SetAtom } from "jotai/atom";
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
 import { createIosSocket } from "../glue/ios.ts";
 import { createAndroidSocket } from "../glue/android.ts";
 import { createParentWindowSocket } from "../glue/parent-window.ts";
+import { Socket } from "../socket.ts";
 import { WrpChannel } from "../channel.ts";
 import { WrpGuest } from "../guest.ts";
 import {
@@ -10,23 +12,25 @@ import {
   ClientImplAtom,
   createWrpAtomSet,
   GuestAtom,
-  SocketAtom,
+  PrimitiveSocketAtom,
   WrpAtomSet,
 } from "./index.ts";
 
-export const socketAtom: SocketAtom = atom(async () => {
-  return await Promise.any([
-    createAndroidSocket(),
-    createIosSocket(),
-    createParentWindowSocket({
-      parentWindowOrigin: "*",
-    }),
-    createParentWindowSocket({
-      parent: globalThis.opener,
-      parentWindowOrigin: "*",
-    }),
-  ]).catch(() => undefined);
-});
+export function initSocketAtom(setSocket: SetAtom<Socket, void>) {
+  // const setSocket = useSetAtom(socketAtom);
+  async () => {
+    return await Promise.any([
+      createAndroidSocket(),
+      createIosSocket(),
+      createParentWindowSocket({
+        parent: globalThis.opener || globalThis.parent,
+        parentWindowOrigin: "*",
+      }),
+    ]).catch(() => undefined);
+  }
+}
+
+export const socketAtom: PrimitiveSocketAtom = atom<Socket | undefined>(undefined);
 
 const wrpAtomSet: WrpAtomSet = createWrpAtomSet(socketAtom);
 

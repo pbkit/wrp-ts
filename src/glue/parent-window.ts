@@ -12,13 +12,13 @@ import {
 
 export interface CreateParentWindowSocketConfig {
   parent?: Window | null;
-  parentOrigin: string;
+  parentWindowOrigin: string;
   onClosed?: () => void;
 }
 export async function createParentWindowSocket(
   config: CreateParentWindowSocketConfig,
 ): Promise<Closer & Socket> {
-  const { parent = globalThis.parent, parentOrigin, onClosed } = config;
+  const { parent = globalThis.parent, parentWindowOrigin, onClosed } = config;
   if (!parent?.postMessage) throw new Error("There is no parent window.");
   if (parent === globalThis.self) throw new Error("Invalid parent window.");
   let handshakeIsDone = false;
@@ -33,7 +33,7 @@ export async function createParentWindowSocket(
       const length = data.byteLength;
       const success = postGlueMessage({
         target: parent,
-        targetOrigin: parentOrigin,
+        targetOrigin: parentWindowOrigin,
         payload: data,
       });
       if (!success) close();
@@ -51,7 +51,7 @@ export async function createParentWindowSocket(
   function syn() {
     const success = postGlueHandshakeMessage({
       target: parent!,
-      targetOrigin: parentOrigin,
+      targetOrigin: parentWindowOrigin,
       payload: "syn",
     });
     if (!success) close();
@@ -60,7 +60,7 @@ export async function createParentWindowSocket(
     handshakeIsDone = true;
     const success = postGlueHandshakeMessage({
       target: parent!,
-      targetOrigin: parentOrigin,
+      targetOrigin: parentWindowOrigin,
       payload: "ack",
     });
     if (!success) close();

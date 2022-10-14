@@ -15,7 +15,6 @@ export default function useWrpIframeSocket(): UseWrpIframeSocketResult {
     let unmounted = false;
     let waitForReconnect = defer<void>();
     const iframeElement = iframeRef.current!;
-    iframeElement.addEventListener("load", tryReconnect);
     (async () => { // reconnection loop
       while (true) {
         if (unmounted) return;
@@ -23,6 +22,7 @@ export default function useWrpIframeSocket(): UseWrpIframeSocketResult {
           socket = await createIframeSocket({
             iframeElement,
             iframeOrigin: "*",
+            onClosed: tryReconnect,
           });
           setSocket(socket);
           await waitForReconnect;
@@ -32,10 +32,8 @@ export default function useWrpIframeSocket(): UseWrpIframeSocketResult {
     return () => {
       unmounted = true;
       tryReconnect();
-      void iframeElement.removeEventListener("load", tryReconnect);
     };
     function tryReconnect() {
-      if (socket) socket.close();
       waitForReconnect.resolve();
       waitForReconnect = defer<void>();
     }

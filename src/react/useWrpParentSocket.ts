@@ -18,7 +18,10 @@ export default function useWrpParentSocket(): UseWrpParentSocketResult {
     Promise.any([
       createAndroidSocket(),
       createIosSocket(),
-      createParentWindowSocket({ parentWindowOrigin: "*" }),
+      createParentWindowSocket({
+        parent: globalThis.opener || globalThis.parent,
+        parentWindowOrigin: "*",
+      }),
     ]).then(setSocket).catch(setError);
   }, []);
   return { socket, error };

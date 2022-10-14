@@ -1,4 +1,4 @@
-import { Atom, atom } from "jotai";
+import { Atom, atom, PrimitiveAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
 import { Type as WrpMessage } from "../generated/messages/pbkit/wrp/WrpMessage.ts";
@@ -7,10 +7,14 @@ import { createWrpChannel, WrpChannel } from "../channel.ts";
 import { createWrpClientImpl } from "../rpc/client.ts";
 import { createWrpGuest, WrpGuest } from "../guest.ts";
 
-export type SocketAtom = Atom<Promise<Socket | undefined>>;
+export type SocketAtom = PrimitiveSocketAtom | AsyncSocketAtom;
 export type ChannelAtom = Atom<WrpChannel | undefined>;
 export type GuestAtom = Atom<Promise<WrpGuest> | undefined>;
 export type ClientImplAtom = Atom<RpcClientImpl | undefined>;
+
+export type PrimitiveSocketAtom = PrimitiveAtom<Socket | undefined>;
+export type AsyncSocketAtom = Atom<Promise<Socket | undefined>>;
+
 export interface WrpAtomSet {
   channelAtom: ChannelAtom;
   guestAtom: GuestAtom;
