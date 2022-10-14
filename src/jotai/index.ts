@@ -1,11 +1,11 @@
 import { Atom, atom, PrimitiveAtom } from "jotai";
 import { selectAtom } from "jotai/utils";
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
-import { Type as WrpMessage } from "../generated/messages/pbkit/wrp/WrpMessage.ts";
 import { Socket } from "../socket.ts";
 import { createWrpChannel, WrpChannel } from "../channel.ts";
 import { createWrpClientImpl } from "../rpc/client.ts";
-import { createWrpGuest, WrpGuest } from "../guest.ts";
+import { WrpGuest } from "../guest.ts";
+import tee from "../tee.ts";
 
 export type SocketAtom = PrimitiveSocketAtom | AsyncSocketAtom;
 export type ChannelAtom = Atom<WrpChannel | undefined>;
@@ -40,32 +40,7 @@ export function createWrpAtomSetFromSourceChannelAtom(
     async (get) => {
       const sourceChannel = get(sourceChannelAtom);
       if (!sourceChannel) return;
-      const listeners: ((message?: WrpMessage) => void)[] = [];
-      const guest = createWrpGuest({
-        channel: {
-          ...sourceChannel,
-          async *listen() {
-            for await (const message of sourceChannel.listen()) {
-              yield message;
-              for (const listener of listeners) listener(message);
-              listeners.length = 0;
-            }
-          },
-        },
-      });
-      const channel: WrpChannel = {
-        ...sourceChannel,
-        async *listen() {
-          while (true) {
-            const message = await new Promise<WrpMessage | undefined>(
-              (resolve) => listeners.push(resolve),
-            );
-            if (!message) break;
-            yield message;
-          }
-        },
-      };
-      return { channel, guest };
+      return tee(sourceChannel);
     },
   );
   const channelAtom = selectAtom(

@@ -1,12 +1,10 @@
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import type { SetAtom } from "jotai/atom";
 import type { RpcClientImpl } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/rpc.ts";
-import { createIosSocket } from "../glue/ios.ts";
-import { createAndroidSocket } from "../glue/android.ts";
-import { createParentWindowSocket } from "../glue/parent-window.ts";
 import { Socket } from "../socket.ts";
 import { WrpChannel } from "../channel.ts";
 import { WrpGuest } from "../guest.ts";
+import useOnceEffect from "../react/useOnceEffect.ts";
+import { subscribeParentSocket } from "../glue/parent.ts";
 import {
   ChannelAtom,
   ClientImplAtom,
@@ -16,21 +14,17 @@ import {
   WrpAtomSet,
 } from "./index.ts";
 
-export function initSocketAtom(setSocket: SetAtom<Socket, void>) {
-  // const setSocket = useSetAtom(socketAtom);
-  async () => {
-    return await Promise.any([
-      createAndroidSocket(),
-      createIosSocket(),
-      createParentWindowSocket({
-        parent: globalThis.opener || globalThis.parent,
-        parentWindowOrigin: "*",
-      }),
-    ]).catch(() => undefined);
-  }
+/**
+ * Use it on root of your react application
+ */
+export function useInitParentSocketEffect() {
+  const setSocket = useSetAtom(socketAtom);
+  useOnceEffect(() => subscribeParentSocket(setSocket));
 }
 
-export const socketAtom: PrimitiveSocketAtom = atom<Socket | undefined>(undefined);
+export const socketAtom: PrimitiveSocketAtom = atom<Socket | undefined>(
+  undefined,
+);
 
 const wrpAtomSet: WrpAtomSet = createWrpAtomSet(socketAtom);
 
