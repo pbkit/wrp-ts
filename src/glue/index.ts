@@ -4,13 +4,13 @@ import {
 } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
 import { Closer, Reader } from "../socket.ts";
 import { chain } from "../misc.ts";
-import { str2u8s } from "./misc.ts";
-
-const key = "<glue>";
+import { str2u8s } from "./misc/util.ts";
 
 export interface Glue extends Closer, Reader {
   recv(data: Uint8Array | string): void;
 }
+
+const key = "<glue>";
 
 export function getGlue(): Glue {
   const global = globalThis as any;
@@ -49,20 +49,4 @@ export function createGlue(): Glue {
       return data.byteLength;
     }),
   };
-}
-
-// for postMessage approach
-export interface GlueEvent {
-  data: [
-    glueKey: typeof key,
-    isHandshakeMessage: boolean,
-    payload: Uint8Array | string,
-  ];
-  source: typeof globalThis | Window;
-}
-export function isGlueEvent(event: any): event is GlueEvent {
-  if (!Array.isArray(event.data)) return false;
-  if (event.data.length < 3) return false;
-  if (event.data[0] !== key) return false;
-  return true;
 }

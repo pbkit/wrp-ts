@@ -1,5 +1,5 @@
 import { Socket } from "../socket.ts";
-import { checkAndRetryUntilSuccess, u8s2str } from "./misc.ts";
+import { checkAndRetryUntilSuccess, u8s2str } from "./misc/util.ts";
 import { getGlue } from "./index.ts";
 
 // https://developer.apple.com/documentation/webkit/wkusercontentcontroller/1537172-add
