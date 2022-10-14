@@ -9,14 +9,14 @@ import {
 
 export interface CreateChildWindowSocketConfig {
   child: Window;
-  childOrigin: string;
+  childWindowOrigin: string;
   onClosed?: () => void;
 }
 export async function createChildWindowSocket(
   config: CreateChildWindowSocketConfig,
 ): Promise<Closer & Socket> {
-  const { child, childOrigin, onClosed } = config;
-  await handshake(child, childOrigin);
+  const { child, childWindowOrigin, onClosed } = config;
+  await handshake(child, childWindowOrigin);
   const healthcheckId = setInterval(healthcheck, 100);
   const glue = createGlue();
   return {
@@ -25,7 +25,7 @@ export async function createChildWindowSocket(
       const length = data.byteLength;
       const success = postGlueMessage({
         target: child,
-        targetOrigin: childOrigin,
+        targetOrigin: childWindowOrigin,
         payload: data,
       });
       if (!success) close();
@@ -44,7 +44,7 @@ export async function createChildWindowSocket(
 }
 
 // wait syn -> send syn-ack -> wait ack
-async function handshake(child: Window, childOrigin: string) {
+async function handshake(child: Window, childWindowOrigin: string) {
   let synAcked = false;
   const wait = defer<void>();
   const healthcheckId = setInterval(healthcheck, 100);
@@ -84,7 +84,7 @@ async function handshake(child: Window, childOrigin: string) {
     synAcked = true;
     const success = postGlueHandshakeMessage({
       target: child,
-      targetOrigin: childOrigin,
+      targetOrigin: childWindowOrigin,
       payload: "syn",
     });
     if (!success) abort(new Error("Failed to send syn-ack."));

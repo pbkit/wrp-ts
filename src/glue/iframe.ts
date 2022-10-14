@@ -16,7 +16,7 @@ export async function createIframeSocket(
   );
   const childWindowSocket = await createChildWindowSocket({
     child: iframeWindow,
-    childOrigin: iframeOrigin,
+    childWindowOrigin: iframeOrigin,
     onClosed,
   });
   onceIframeReloaded(iframeElement, childWindowSocket.close);

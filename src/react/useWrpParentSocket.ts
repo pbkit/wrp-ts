@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Socket } from "../socket.ts";
-import { createAndroidSocket } from "../glue/android.ts";
-import { createIosSocket } from "../glue/ios.ts";
-import { createParentWindowSocket } from "../glue/parent-window.ts";
+import useOnceEffect from "../react/useOnceEffect.ts";
+import { subscribeParentSocket } from "../glue/parent.ts";
 
 export interface UseWrpParentSocketResult {
   socket: Socket | undefined;
@@ -14,12 +13,11 @@ export interface UseWrpParentSocketResult {
 export default function useWrpParentSocket(): UseWrpParentSocketResult {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
-  useEffect(() => {
-    Promise.any([
-      createAndroidSocket(),
-      createIosSocket(),
-      createParentWindowSocket({ parentWindowOrigin: "*" }),
-    ]).then(setSocket).catch(setError);
-  }, []);
+  useOnceEffect(() =>
+    subscribeParentSocket((socket, error) => {
+      setSocket(socket);
+      setError(error);
+    })
+  );
   return { socket, error };
 }
