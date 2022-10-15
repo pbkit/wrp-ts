@@ -85,7 +85,7 @@ async function handshake(child: Window, childWindowOrigin: string) {
     const success = postGlueHandshakeMessage({
       target: child,
       targetOrigin: childWindowOrigin,
-      payload: "syn",
+      payload: "syn-ack",
     });
     if (!success) abort(new Error("Failed to send syn-ack."));
   }
