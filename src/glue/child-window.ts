@@ -2,6 +2,7 @@ import { defer } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/obse
 import { Closer, Socket } from "../socket.ts";
 import { createGlue } from "./index.ts";
 import {
+  isGlueEvent,
   isGlueHandshakeEvent,
   postGlueHandshakeMessage,
   postGlueMessage,
@@ -17,6 +18,7 @@ export async function createChildWindowSocket(
 ): Promise<Closer & Socket> {
   const { child, childWindowOrigin, onClosed } = config;
   await handshake(child, childWindowOrigin);
+  globalThis.addEventListener("message", messageHandler);
   const healthcheckId = setInterval(healthcheck, 100);
   const glue = createGlue();
   return {
@@ -35,11 +37,18 @@ export async function createChildWindowSocket(
   };
   function close() {
     clearInterval(healthcheckId);
+    globalThis.removeEventListener("message", messageHandler);
     glue.close();
     onClosed?.();
   }
   function healthcheck() {
     if (child.closed) close();
+  }
+  function messageHandler(e: MessageEvent) {
+    if (e.source !== parent) return;
+    if (!isGlueEvent(e)) return;
+    const [, data] = e.data;
+    glue.recv(data);
   }
 }
 
