@@ -34,7 +34,7 @@ export default async function buildWrp(config: BuildConfig) {
     const entries = walk(srcDir, { includeDirs: false, exts: [".ts"] });
     for await (const { path: fromPath } of entries) {
       const path = fromPath.substring(srcDir.length + 1);
-      if (path.startsWith("react")) continue;
+      if (path.startsWith("react") || path.startsWith("jotai")) continue;
       const toPath = join(tsDir, path);
       await ensureDir(dirname(toPath));
       const code = await Deno.readTextFile(fromPath);
