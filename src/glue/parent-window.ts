@@ -1,3 +1,4 @@
+import { defer } from "https://deno.land/x/pbkit@v0.0.45/core/runtime/async/observer.ts";
 import { Closer, Socket } from "../socket.ts";
 import { getGlue } from "./index.ts";
 import {
@@ -21,12 +22,14 @@ export async function createParentWindowSocket(
   const { parent = globalThis.parent, parentWindowOrigin, onClosed } = config;
   if (!parent?.postMessage) throw new Error("There is no parent window.");
   if (parent === globalThis.self) throw new Error("Invalid parent window.");
-  let handshakeIsDone = false;
+  const wait = defer<void>();
+  let acked = false;
   globalThis.addEventListener("message", messageHandler);
   globalThis.addEventListener("message", handshakeHandler);
   const glue = getGlue();
   const connId = setInterval(syn, 100);
   syn();
+  await wait;
   return {
     read: glue.read,
     async write(data) {
@@ -47,6 +50,7 @@ export async function createParentWindowSocket(
     globalThis.removeEventListener("message", handshakeHandler);
     glue.close();
     onClosed?.();
+    wait.reject(new Error("Connection closed."));
   }
   function syn() {
     const success = postGlueHandshakeMessage({
@@ -57,13 +61,14 @@ export async function createParentWindowSocket(
     if (!success) close();
   }
   function ack() {
-    handshakeIsDone = true;
+    acked = true;
     const success = postGlueHandshakeMessage({
       target: parent!,
       targetOrigin: parentWindowOrigin,
       payload: "ack",
     });
-    if (!success) close();
+    if (success) wait.resolve();
+    else close();
   }
   function messageHandler(e: MessageEvent) {
     if (e.source !== parent) return;
@@ -76,7 +81,7 @@ export async function createParentWindowSocket(
     if (!isGlueHandshakeEvent(event)) return;
     const [, payload] = event.data;
     if (payload === "syn-ack") {
-      if (handshakeIsDone) close();
+      if (acked) close();
       else ack();
     }
   }

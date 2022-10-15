@@ -45,7 +45,7 @@ export async function createChildWindowSocket(
     if (child.closed) close();
   }
   function messageHandler(e: MessageEvent) {
-    if (e.source !== parent) return;
+    if (e.source !== child) return;
     if (!isGlueEvent(e)) return;
     const [, data] = e.data;
     glue.recv(data);
