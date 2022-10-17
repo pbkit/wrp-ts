@@ -55,7 +55,7 @@ export async function createWrpGuest(
     }
     delete requests[reqId];
   }
-  let reqIdCounter = BigInt(0);
+  let reqIdCounter = 0;
   (async () => {
     for await (const { message } of channel.listen()) {
       if (message == null) continue;
@@ -104,7 +104,7 @@ export async function createWrpGuest(
       return availableMethods;
     },
     request(methodName, req, lazyMetadata) {
-      const reqId = `${reqIdCounter += 1n}`;
+      const reqId = `${++reqIdCounter}`;
       const eventBuffer = createEventBuffer<Uint8Array>({
         onDrainEnd() {
           channel.send({
